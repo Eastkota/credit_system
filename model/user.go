@@ -7,46 +7,37 @@ import (
 )
 
 
-type User struct {
+type StoreOwner struct {
     ID             uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-    UserIdentifier string    `gorm:"type:varchar(32);unique;not null" json:"user_identifier"`
-    Email          string    `gorm:"type:varchar(100);unique" json:"email"`
-    MobileNo       string    `gorm:"type:varchar(20);unique" json:"mobile_no"`
-    Password       string    `gorm:"type:text;not null" json:"password_hash"`
-    Status         string    `gorm:"type:varchar(50);default:active;not null" json:"status"`
-    CreatedAt      time.Time `json:"created_at"`
-    UpdatedAt      time.Time `json:"updated_at"`
+    StoreID     uuid.UUID `gorm:"type:uuid" json:"store_id"`
+    Name        string    `gorm:"type:varchar" json:"name"`
+    Email       string    `gorm:"type:varchar" json:"email"`
+    Password    string    `gorm:"type:varchar" json:"password_hash"`
+    Status      string    `gorm:"type:varchar" json:"status"`
+    PhoneNumber string    `gorm:"type:varchar" json:"phone_number"`
+    CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
-func (User) TableName() string {
-    return "auth.users"
+func (StoreOwner) TableName() string {
+    return "public.store_owners"
 }
 
-type UserActivity struct {
-    ID  uuid.UUID   `gorm:"type:uuid;primaryKey" json:"id"`
-    Activity string `gorm:"type:varchar" json:"activity"`
-    UserID  uuid.UUID `gorm:"type:uuid" json:"user_id"`
-    Count   int     `json:"count" gorm:"type:integer"`
-    Month           int         `json:"month" gorm:"type:integer"`             
-    Year            int         `json:"year" gorm:"type:integer"`
-
-    User    *User   `gorm:"foreignKey:UserID;references:ID" json:"user"`
+type Store struct {
+    ID          uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+    Name        string    `gorm:"type:varchar" json:"name"`
+    Address     string    `gorm:"type:varchar" json:"address"`
+    PhoneNumber string    `gorm:"type:varchar" json:"phone_number"`
+    CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
-func (UserActivity) TableName() string {
-    return "auth.user_activities"
+func (Store) TableName() string {
+    return "public.stores"
 }
+
 
 type UserResult struct {
     User *User `json:"user"`
 }
 
-type AuthUserProfile struct {
-    ID                      uuid.UUID `json:"id"`
-    Name                    string    `json:"name"`
-    ProfilePicture          string    `json:"profile_picture"`
-    Gender                  string    `json:"gender"`
-    UserId                  uuid.UUID `json:"user_id"`
-    CreatedAt               time.Time `json:"created_at"`
-    UpdatedAt               time.Time `json:"updated_at"`
-}

@@ -17,47 +17,41 @@ import (
 	"github.com/google/uuid"	
 )
 
-func (repo *AuthRepository) CheckForExistingUser(field, value string) (*model.User, error) {
-    var user model.User
-    err := repo.DB.Where(fmt.Sprintf("%s = ? AND status != ?", field), value, "Deleted").First(&user).Error
+func (repo *AuthRepository) CheckForExistingUser(field, value string) (*model.StoreOwner, error) {
+    var store_owner model.StoreOwner
+    err := repo.DB.Where(fmt.Sprintf("%s = ? AND status != ?", field), value, "Deleted").First(&store_owner).Error
     if errors.Is(err, gorm.ErrRecordNotFound) {
         return nil, nil
     }
     if err != nil {
         return nil, fmt.Errorf("failed to find user with %v %v", field, value)
     }
-    return &user, nil
+    return &store_owner, nil
 }
 
-func (repo *AuthRepository) FetchUserByLoginID(field, value string) (*model.User, error) {
-    var user model.User
-    err := repo.DB.Where(fmt.Sprintf("%s = ?", field), value).First(&user).Error
+func (repo *AuthRepository) FetchUserByLoginID(field, value string) (*model.StoreOwner, error) {
+    var store_owner model.StoreOwner
+    err := repo.DB.Where(fmt.Sprintf("%s = ?", field), value).First(&store_owner).Error
     if err != nil {
         return nil, fmt.Errorf("failed to find user with %v %v", field, value)
     }
-    return &user, nil
+    return &store_owner, nil
 }
 
-func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model.User, *model.Token, *model.AuthUserProfile, error) {
-    var user *model.User
+func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error) {
+    var store_owner *model.StoreOwner
     var tokenResult *model.Token
     var transactionSucceeded bool
-    var createdUser *model.User
-
+    var createdStoreOwner *model.StoreOwner
     if signupInput.MobileNo != "" {
-        user, _ = repo.FetchUserByLoginID("mobile_no", signupInput.MobileNo)
-        if user == nil && signupInput.Email != "" {
-            user, _ = repo.FetchUserByLoginID("email", signupInput.Email)
+        store_owner, _ = repo.FetchUserByLoginID("mobile_no", signupInput.MobileNo)
+        if store_owner == nil && signupInput.Email != "" {
+            store_owner, _ = repo.FetchUserByLoginID("email", signupInput.Email)
         }
     }
 
-    if(user != nil && user.Status == "Active") {
+    if(store_owner != nil && store_owner.Status == "Active") {
         return nil, nil, nil, fmt.Errorf("user already exists with provided mobile number or email")
-    }
-
-    identifier, err := helpers.GenerateRandomTokenString(6)
-    if err != nil {
-        return nil, nil, nil, fmt.Errorf("failed to generate identifier: %v", err)
     }
 
     hashedPassword, err := helpers.EncryptPassword(signupInput.Password)
@@ -68,11 +62,9 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
     var newUserId uuid.UUID
 
     err = repo.DB.Transaction(func(tx *gorm.DB) error {
-        if user != nil {
+        if store_owner != nil {
             updateData := map[string]interface{}{
                 "mobile_no":       signupInput.MobileNo,
-                "email":           signupInput.Email,
-                "user_identifier": identifier,
                 "password":        hashedPassword,
                 "status":          "Active",
                 "updated_at":      time.Now(),
