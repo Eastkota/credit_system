@@ -26,15 +26,15 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect to database: " + err.Error())
 	}
-	authRepository := repositories.NewAuthRepository(db)
-	authService := services.NewAuthService(authRepository)
-	resolver := resolvers.NewAuthResolver(authService)
+	repository := repositories.NewRepository(db)
+	service := services.NewService(repository)
+	resolver := resolvers.NewResolver(service)
 
 	mutationType := schema.NewMutationType(resolver)
 	queryType := schema.NewQueryType(resolver)
 
 	schema.InitSchema(queryType, mutationType)
-	schema.InitMiddleware(authService)
+	schema.InitMiddleware(service)
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

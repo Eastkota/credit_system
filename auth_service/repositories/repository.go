@@ -36,8 +36,8 @@ type Repository interface {
 	DeleteRefreshToken(accessTokenId string) error
 	DeleteAccessToken(id string) error
 	VerifyClient(clientId, secretKey string) bool
-	FindAccessTokenByPhoneNumber(phone_no string) (*model.AccessToken, error)
-	FindRefreshTokenByPhoneNumber(phone_no string) (*model.RefreshToken, error)
+	FindAccessTokenByPhoneNumber(phone_number string) (*model.AccessToken, error)
+	FindRefreshTokenByPhoneNumber(phone_number string) (*model.RefreshToken, error)
 
 	// CreateUserActivity(ctx context.Context, inputActivityType string, userID uuid.UUID) (*model.UserActivity, error)
 	// CreateGameActivity(ctx context.Context, userID uuid.UUID) error

@@ -17,7 +17,7 @@ type AuthRepository struct {
     DB *gorm.DB
 }
 
-func NewAuthRepository(db *gorm.DB) *AuthRepository {
+func NewRepository(db *gorm.DB) *AuthRepository {
     return &AuthRepository{DB: db}
 }
 
@@ -127,17 +127,17 @@ func (repo *AuthRepository) FindAccessToken(id uuid.UUID) (*model.AccessToken, e
     return &token, nil
 }
 
-func (repo *AuthRepository) FindAccessTokenByPhoneNumber(phone_no string) (*model.AccessToken, error) {
+func (repo *AuthRepository) FindAccessTokenByPhoneNumber(phone_number string) (*model.AccessToken, error) {
     var token model.AccessToken
-    err := repo.DB.First(&token, "token = ?", phone_no).Error
+    err := repo.DB.First(&token, "token = ?", phone_number).Error
     if err != nil {
         return nil, fmt.Errorf("access token not found: %v", err)
     }
     return &token, nil
 }
-func (repo *AuthRepository) FindRefreshTokenByPhoneNumber(phone_no string) (*model.RefreshToken, error) {
+func (repo *AuthRepository) FindRefreshTokenByPhoneNumber(phone_number string) (*model.RefreshToken, error) {
     var token model.RefreshToken
-    err := repo.DB.First(&token, "token = ?", phone_no).Error
+    err := repo.DB.First(&token, "token = ?", phone_number).Error
     if err != nil {
         return nil, fmt.Errorf("refresh token not found: %v", err)
     }

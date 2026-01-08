@@ -22,7 +22,7 @@ type AuthService struct {
 	Repository repositories.Repository // Inject Repository
 }
 
-func NewAuthService(repository repositories.Repository) *AuthService {
+func NewService(repository repositories.Repository) *AuthService {
 	return &AuthService{Repository: repository}
 }
 

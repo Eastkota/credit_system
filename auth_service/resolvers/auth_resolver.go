@@ -15,7 +15,7 @@ type AuthResolver struct {
 	Services services.Services // Inject Services
 }
 
-func NewAuthResolver(service services.Services) *AuthResolver {
+func NewResolver(service services.Services) *AuthResolver {
 	return &AuthResolver{Services: service}
 }
 

@@ -10,9 +10,9 @@ import (
 type StoreOwner struct {
     ID             uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
     Name        string    `gorm:"type:varchar" json:"name"`
-    Password    string    `gorm:"type:varchar" json:"password_hash"`
+    Password    string    `gorm:"type:varchar" json:"password"`
     Status      string    `gorm:"type:varchar" json:"status"`
-    PhoneNumber string    `gorm:"type:varchar" json:"phone_no"`
+    PhoneNumber string    `gorm:"type:varchar" json:"phone_number"`
     CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
     UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }

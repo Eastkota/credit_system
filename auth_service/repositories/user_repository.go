@@ -64,7 +64,7 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
 
         storeResult = model.Store{
             ID:          uuid.New(),
-            Name:        signupInput.Name,
+            Name:        signupInput.StoreName,
             OwnerID:     storeOwner.ID,
         }
 
