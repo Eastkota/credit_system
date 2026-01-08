@@ -17,7 +17,7 @@ const (
 
 type AccessToken struct {
     ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-    UserId    uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`
+    OwnerId    uuid.UUID `gorm:"type:uuid;not null" json:"owner_id"`
     ClientId  uuid.UUID `gorm:"type:uuid;not null" json:"client_id"`
     Token     string    `gorm:"type:text;not null" json:"token"`
     Scopes    []string  `gorm:"type:text[]" json:"scopes"`
@@ -27,7 +27,7 @@ type AccessToken struct {
     UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 func (AccessToken) TableName() string {
-    return "auth.access_tokens"
+    return "public.access_tokens"
 }
 
 type Client struct {
@@ -43,7 +43,7 @@ type Client struct {
     UpdatedAt            time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 func (Client) TableName() string {
-    return "auth.auth_clients"
+    return "public.auth_clients"
 }
 
 type RefreshToken struct {
@@ -57,7 +57,7 @@ type RefreshToken struct {
 }
 
 func (RefreshToken) TableName() string {
-    return "auth.refresh_tokens"
+    return "public.refresh_tokens"
 }
 
 type Token struct {
@@ -68,7 +68,7 @@ type Token struct {
 }
 
 type Claims struct {
-    User    *User  `json:"user"`
+    Owner    *StoreOwner  `json:"owner"`
     TokenId string `json:"token_id"`
     Exp     string  `json:"exp"`
     Issuer string  `json:"issuer"`

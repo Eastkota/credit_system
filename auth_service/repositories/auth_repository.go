@@ -21,12 +21,12 @@ func NewAuthRepository(db *gorm.DB) *AuthRepository {
     return &AuthRepository{DB: db}
 }
 
-func (repo *AuthRepository) CreateToken(user *model.User, clientId, clientSecret string, tx *gorm.DB) (*model.Token, error) {
+func (repo *AuthRepository) CreateToken(owner *model.StoreOwner, clientId, clientSecret string, tx *gorm.DB) (*model.Token, error) {
 	if !repo.VerifyClient(clientId, clientSecret) {	
 		return nil, fmt.Errorf("invalid client credentials")
 	}
-	if user == nil {
-		return nil, fmt.Errorf("user cannot be nil")
+	if owner == nil {
+		return nil, fmt.Errorf("owner cannot be nil")
 	}
 	accessTokenId := uuid.New()
 	accessToken, err := helpers.GenerateRandomTokenString(32)
@@ -40,7 +40,7 @@ func (repo *AuthRepository) CreateToken(user *model.User, clientId, clientSecret
 	newAccessToken := model.AccessToken{
 		ID:             accessTokenId,
 		Token:       	accessToken,
-		UserId:     	user.ID,
+		OwnerId:     	owner.ID,
 		ClientId:   	parsedClientID,
 		Revoked:     	false,
 		ExpiresAt:   	time.Now().Add(config.AccessTokenDuration),
@@ -76,13 +76,13 @@ func (repo *AuthRepository) CreateToken(user *model.User, clientId, clientSecret
         return nil, fmt.Errorf("failed to create refresh token: %v", err)
     }
 
-    accessTokenString,err := helpers.GenerateJwtToken(accessToken, config.AccessTokenDuration, clientSecret, user)
+    accessTokenString,err := helpers.GenerateJwtToken(accessToken, config.AccessTokenDuration, clientSecret, owner)
     if err != nil {
         tx.Rollback()
         return nil, fmt.Errorf("failed to generate access token string: %v", err)
     }
 
-    refreshTokenString,err := helpers.GenerateJwtToken(refreshToken, config.RefreshTokenDuration, clientSecret, user)
+    refreshTokenString,err := helpers.GenerateJwtToken(refreshToken, config.RefreshTokenDuration, clientSecret, owner)
     if err != nil {
         tx.Rollback()
         return nil, fmt.Errorf("failed to generate access token string: %v", err)
@@ -127,17 +127,17 @@ func (repo *AuthRepository) FindAccessToken(id uuid.UUID) (*model.AccessToken, e
     return &token, nil
 }
 
-func (repo *AuthRepository) FindAccessTokenByIdentifier(identifier string) (*model.AccessToken, error) {
+func (repo *AuthRepository) FindAccessTokenByPhoneNumber(phone_no string) (*model.AccessToken, error) {
     var token model.AccessToken
-    err := repo.DB.First(&token, "token = ?", identifier).Error
+    err := repo.DB.First(&token, "token = ?", phone_no).Error
     if err != nil {
         return nil, fmt.Errorf("access token not found: %v", err)
     }
     return &token, nil
 }
-func (repo *AuthRepository) FindRefreshTokenByIdentifier(identifier string) (*model.RefreshToken, error) {
+func (repo *AuthRepository) FindRefreshTokenByPhoneNumber(phone_no string) (*model.RefreshToken, error) {
     var token model.RefreshToken
-    err := repo.DB.First(&token, "token = ?", identifier).Error
+    err := repo.DB.First(&token, "token = ?", phone_no).Error
     if err != nil {
         return nil, fmt.Errorf("refresh token not found: %v", err)
     }
@@ -161,27 +161,27 @@ func (repo *AuthRepository) FindRefreshTokenByAccessToken(accessToken string) (*
     return &token, nil
 }
 
-func (repo *AuthRepository) FindAccessTokenForUser(id, userId uuid.UUID) (*model.AccessToken, error) {
+func (repo *AuthRepository) FindAccessTokenForUser(id, ownerId uuid.UUID) (*model.AccessToken, error) {
     var token model.AccessToken
-    err := repo.DB.Where("id = ? AND user_id = ?", id, userId).First(&token).Error
+    err := repo.DB.Where("id = ? AND owner_id = ?", id, ownerId).First(&token).Error
     if err != nil {
         return nil, err
     }
     return &token, nil
 }
 
-func (repo *AuthRepository) FindAccessTokensForUser(userId uuid.UUID) ([]model.AccessToken, error) {
+func (repo *AuthRepository) FindAccessTokensForUser(ownerId uuid.UUID) ([]model.AccessToken, error) {
     var tokens []model.AccessToken
-    err := repo.DB.Where("user_id = ?", userId).Find(&tokens).Error
+    err := repo.DB.Where("owner_id = ?", ownerId).Find(&tokens).Error
     if err != nil {
         return nil, fmt.Errorf("failed to fetch tokens: %v", err)
     }
     return tokens, nil
 }
 
-func (repo *AuthRepository) GetValidAccessToken(userId uuid.UUID, clientId string) (*model.AccessToken, error) {
+func (repo *AuthRepository) GetValidAccessToken(ownerId uuid.UUID, clientId string) (*model.AccessToken, error) {
     var token model.AccessToken
-    err := repo.DB.Where("user_id = ? AND client_id = ? AND revoked = ? AND expires_at > ?", userId, clientId, false, time.Now()).First(&token).Error
+    err := repo.DB.Where("owner_id = ? AND client_id = ? AND revoked = ? AND expires_at > ?", ownerId, clientId, false, time.Now()).First(&token).Error
     if err != nil {
         return nil, err
     }
@@ -241,9 +241,9 @@ func (repo *AuthRepository) DeleteRefreshToken(accessTokenId string) error {
     return nil
 }
 
-func (repo *AuthRepository) DeleteTokens(userId uuid.UUID) error {
+func (repo *AuthRepository) DeleteTokens(ownerId uuid.UUID) error {
     var tokens []model.AccessToken
-    if err := repo.DB.Where("user_id = ?", userId).Find(&tokens).Error; err != nil {
+    if err := repo.DB.Where("owner_id = ?", ownerId).Find(&tokens).Error; err != nil {
         return err
     }
     return repo.DB.Transaction(func(tx *gorm.DB) error {
@@ -252,24 +252,24 @@ func (repo *AuthRepository) DeleteTokens(userId uuid.UUID) error {
                 return err
             }
         }
-        if err := tx.Where("user_id = ?", userId).Delete(&model.AccessToken{}).Error; err != nil {
+        if err := tx.Where("owner_id = ?", ownerId).Delete(&model.AccessToken{}).Error; err != nil {
             return err
         }
         return nil
     })
 }
 
-func (repo *AuthRepository) GetOldestAccessToken(userId uuid.UUID) (*model.AccessToken, error) {
+func (repo *AuthRepository) GetOldestAccessToken(ownerId uuid.UUID) (*model.AccessToken, error) {
     var token model.AccessToken
-    err := repo.DB.Where("user_id = ? AND revoked = ? AND expires_at > ?", userId, false, time.Now()).Order("expires_at asc").First(&token).Error
+    err := repo.DB.Where("owner_id = ? AND revoked = ? AND expires_at > ?", ownerId, false, time.Now()).Order("expires_at asc").First(&token).Error
     if err != nil {
         return nil, err
     }
     return &token, nil
 }
 
-func (repo *AuthRepository) DeleteOldestAccessToken(userId uuid.UUID) error {
-	oldestToken, err := repo.GetOldestAccessToken(userId)
+func (repo *AuthRepository) DeleteOldestAccessToken(ownerId uuid.UUID) error {
+	oldestToken, err := repo.GetOldestAccessToken(ownerId)
 	if err != nil {
 		return fmt.Errorf("failed to get oldest access token: %v", err)
 	}

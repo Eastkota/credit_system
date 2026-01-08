@@ -1,14 +1,13 @@
 package model
 
 type LoginSuccessData struct {
-    User       *User              `json:"user"`
-    Profile    *AuthUserProfile   `json:"profile"`
+    Owner      *StoreOwner        `json:"owner"`
+    Store    *Store        `json:"store"`
     Token      *Token             `json:"token"`
-    Membership *AuthUserMembership `json:"membership"`
 }
 
 type ValidateTokenSuccessData struct {
-    User  *User  `json:"user"`
+    Owner  *StoreOwner  `json:"owner"`
 }
 
 type GenericAuthSuccessData struct {
@@ -22,9 +21,13 @@ type GenericAuthResponse struct {
 }
 
 type DeleteUserResult struct {
-    User       *User              `json:"user"`
+    Owner       *StoreOwner        `json:"owner"`
 }
 
-type UserActivityResult struct {
-    UserActivity    *UserActivity   `json:"user_activity"`
+type OwnerResult struct {
+    Owner       *StoreOwner        `json:"owner"`
+}
+
+type StoreResult struct {
+    Store       *Store        `json:"store"`
 }

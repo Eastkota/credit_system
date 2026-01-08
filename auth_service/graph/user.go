@@ -7,29 +7,28 @@ import (
 )
 
 // Define UserType
-var User = graphql.NewObject(graphql.ObjectConfig{
-	Name: "User",
+var StoreOwner = graphql.NewObject(graphql.ObjectConfig{
+	Name: "StoreOwner",
 	Fields: graphql.Fields{
-		"id":              &graphql.Field{Type: scalar.UUID},
-		"user_identifier": &graphql.Field{Type: graphql.String},
-		"email":           &graphql.Field{Type: graphql.String},
-		"mobile_no":       &graphql.Field{Type: graphql.String},
-		"status":          &graphql.Field{Type: graphql.String},
-		"created_at":      &graphql.Field{Type: scalar.Time},
-		"updated_at":      &graphql.Field{Type: scalar.Time},
+		"id":                         &graphql.Field{Type: scalar.UUID},
+		"name":                       &graphql.Field{Type: graphql.String},
+		"phone_number":               &graphql.Field{Type: graphql.String},
+		"password":                   &graphql.Field{Type: graphql.String},
+		"status":                     &graphql.Field{Type: graphql.String},
+		"created_at":                 &graphql.Field{Type: scalar.Time},
+		"updated_at":                 &graphql.Field{Type: scalar.Time},
 	},
 })
 
 // Define UserType
-var AuthUserProfile = graphql.NewObject(graphql.ObjectConfig{
-	Name: "AuthUserProfile",
+var Store = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Store",
 	Fields: graphql.Fields{
-		"id":                         &graphql.Field{Type: scalar.UUID},
-		"name":                       &graphql.Field{Type: graphql.String},
-		"profile_picture":            &graphql.Field{Type: graphql.String},
-		"gender":                     &graphql.Field{Type: graphql.String},
-		"created_at":                 &graphql.Field{Type: scalar.Time},
-		"updated_at":                 &graphql.Field{Type: scalar.Time},
+		"id": &graphql.Field{Type: scalar.UUID},
+		"name": &graphql.Field{Type: graphql.String},
+		"owner_id": &graphql.Field{Type: scalar.UUID},
+		"created_at": &graphql.Field{Type: scalar.Time},
+		"updated_at": &graphql.Field{Type: scalar.Time},
 	},
 })
 
@@ -60,10 +59,9 @@ var Token = graphql.NewObject(graphql.ObjectConfig{
 var Login = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Login",
 	Fields: graphql.Fields{
-		"user":       &graphql.Field{Type: User},
-		"profile":    &graphql.Field{Type: AuthUserProfile},
+		"owner":       &graphql.Field{Type: StoreOwner},
+		"store":    &graphql.Field{Type: Store},
 		"token":      &graphql.Field{Type: Token},
-		"membership": &graphql.Field{Type: AuthUserMembership},
 	},
 })
 
@@ -71,13 +69,13 @@ var ExistUser = graphql.NewObject(graphql.ObjectConfig{
 	Name: "ExistUser",
 	Fields: graphql.Fields{
 		"exist_user": &graphql.Field{Type: graphql.Boolean},
-		"user_id":    &graphql.Field{Type: scalar.UUID},
+		"owner_id":    &graphql.Field{Type: scalar.UUID},
 	},
 })
 var UserResult = graphql.NewObject(graphql.ObjectConfig{
 	Name: "UserResult",
 	Fields: graphql.Fields{
-		"user": &graphql.Field{Type: User},
+		"owner": &graphql.Field{Type: StoreOwner},
 	},
 })
 
@@ -91,29 +89,13 @@ var AuthGenericSuccessData = graphql.NewObject(graphql.ObjectConfig{
 var ValidateTokenResult = graphql.NewObject(graphql.ObjectConfig{
 	Name: "ValidateTokenResult",
 	Fields: graphql.Fields{
-		"user": &graphql.Field{Type: User},
+		"owner": &graphql.Field{Type: StoreOwner},
 	},
 })
 
-var UserActivity = graphql.NewObject(graphql.ObjectConfig{
-	Name: "UserActivity",
+var StoreResult = graphql.NewObject(graphql.ObjectConfig{
+	Name: "StoreResult",
 	Fields: graphql.Fields{
-		"id":         &graphql.Field{Type: scalar.UUID},
-		"user_id":    &graphql.Field{Type: scalar.UUID},
-		"activity":  &graphql.Field{Type: graphql.String},
-		"created_at": &graphql.Field{Type: scalar.Time},
-		"updated_at": &graphql.Field{Type: scalar.Time},
-		"count":      &graphql.Field{Type: graphql.Int},
-		"month":      &graphql.Field{Type: graphql.Int},
-		"year":       &graphql.Field{Type: graphql.Int},
-
-		"user":		&graphql.Field{Type: User},
-	},
-})
-
-var UserActivityResult = graphql.NewObject(graphql.ObjectConfig{
-	Name: "UserActivityResult",
-	Fields: graphql.Fields{
-		"user_activity": &graphql.Field{Type: UserActivity},
+		"store": &graphql.Field{Type: Store},
 	},
 })

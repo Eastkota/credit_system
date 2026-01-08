@@ -40,18 +40,29 @@ func NewQueryType(resolver *resolvers.AuthResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return PublicAuthMiddleware(resolver.CheckForExistingUser)(p), nil
+					return resolver.CheckForExistingUser(p), nil
 				},
 			},
 			"fetchUser": &graphql.Field{
 				Type: SingleUserResponse,
 				Args: graphql.FieldConfigArgument{
-					"user_id": &graphql.ArgumentConfig{
+					"owner_id": &graphql.ArgumentConfig{
 						Type: scalar.UUID,
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(resolver.FetchUser)(p), nil
+					return resolver.FetchUser(p), nil
+				},
+			},
+			"fetchStore": &graphql.Field{
+				Type: StoreResponse,
+				Args: graphql.FieldConfigArgument{
+					"store_id": &graphql.ArgumentConfig{
+						Type: scalar.UUID,
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return resolver.FetchStore(p), nil
 				},
 			},
 			"validateToken": &graphql.Field{

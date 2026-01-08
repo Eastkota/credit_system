@@ -27,7 +27,7 @@ func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericAuthRespons
         ctx := p.Context
         userInterface := ctx.Value(model.UserKey)
 
-        var user *model.User
+        var owner *model.StoreOwner
         if userInterface == nil {
             if req, ok := ctx.Value(model.RequestKey).(*http.Request); ok {
                 authHeader := req.Header.Get("Authorization")
@@ -41,15 +41,15 @@ func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericAuthRespons
 
                 ctx = context.WithValue(ctx, model.UserKey, u)
                 p.Context = ctx
-                user = u
+                owner = u
             } else {
                 return helpers.FormatError(fmt.Errorf("invalid_token"))
             }
         } else {
-            user, _ = userInterface.(*model.User)
+            owner, _ = userInterface.(*model.User)
         }
 
-        if user == nil {
+        if owner == nil {
             return helpers.FormatError(fmt.Errorf("invalid_token"))
         }
 
@@ -57,7 +57,7 @@ func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericAuthRespons
             ctx := context.Background() // new context not tied to request
             _, err := authService.SaveUserActivity(ctx, &model.UserActivityInput{
                 Activity: p.Info.FieldName,
-                UserID:   user.ID,
+                ownerID:   owner.ID,
             })
             if err != nil {
                 log.Printf("[UserActivity] Failed to save activity: %v", err)

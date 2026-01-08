@@ -8,13 +8,13 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func GenerateJwtToken(id string, duration time.Duration, clientSecret string, user *model.User) (string, error) {
+func GenerateJwtToken(id string, duration time.Duration, clientSecret string, owner *model.StoreOwner) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"token_id": id,
 			"exp":      time.Now().Add(duration),
-			"user":     user,
-			"issuer":  "educare",	
+			"owner":     owner,
+			"issuer":  "iBestTechnologies",	
 		})
 	tokenString, err := token.SignedString([]byte(clientSecret))
 	if err != nil {

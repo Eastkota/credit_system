@@ -34,6 +34,14 @@ var SingleUserResponse = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var StoreResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "StoreResponse",
+	Fields: graphql.Fields{
+		"data":  &graphql.Field{Type: StoreResult},
+		"error": &graphql.Field{Type: AuthError},
+	},
+})
+
 var ValidateTokenResponse = graphql.NewObject(graphql.ObjectConfig{
 	Name: "ValidateTokenResponse",
 	Fields: graphql.Fields{
@@ -42,28 +50,6 @@ var ValidateTokenResponse = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var UserActivityResponse = graphql.NewObject(graphql.ObjectConfig{
-	Name: "UserActivityResponse",
-	Fields: graphql.Fields{
-		"data":  &graphql.Field{Type: UserActivityResult},
-		"error": &graphql.Field{Type: AuthError},
-	},
-})
 
-var CheyCheyActivityResult = graphql.NewObject(graphql.ObjectConfig{
-    Name: "CheyCheyActivityResult",
-    Fields: graphql.Fields{
-        "message": &graphql.Field{
-            Type: graphql.String,
-        },
-    },
-})
 
-var CheyCheyActivityResponse = graphql.NewObject(graphql.ObjectConfig{
-    Name: "CheyCheyActivityResponse",
-    Fields: graphql.Fields{
-        "data":  &graphql.Field{Type: CheyCheyActivityResult},
-        "error": &graphql.Field{Type: AuthError},
-    },
-})
 
