@@ -1,9 +1,9 @@
 package resolvers
 
 import (
-	"auth_service/helpers"
-	"auth_service/model"
-	"auth_service/services"
+	"credit_system/auth_service/helpers"
+	"credit_system/auth_service/model"
+	"credit_system/auth_service/services"
 
 	"encoding/json"
 

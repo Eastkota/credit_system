@@ -1,9 +1,9 @@
 package services
 
 import (
-	"auth_service/config"
-	"auth_service/model"
-	"auth_service/repositories"
+	"credit_system/config"
+	"credit_system/auth_service/model"
+	"credit_system/auth_service/repositories"
 
 	"fmt"
 	"time"
@@ -127,7 +127,7 @@ func (as *AuthService) ValidateToken(authHeader string) (*model.StoreOwner, erro
         return nil, ErrInvalidToken
     }
 
-    accessToken, err := as.Repository.FindAccessTokenByIdentifier(claims.TokenId)
+    accessToken, err := as.Repository.FindAccessTokenByPhoneNumber(claims.TokenId)
     if err != nil || accessToken == nil {
         return nil,  ErrInvalidToken
     }
@@ -139,19 +139,19 @@ func (as *AuthService) ValidateToken(authHeader string) (*model.StoreOwner, erro
     now := time.Now()
 
     if accessToken.ExpiresAt.After(now) {
-        var user *model.User
-        if claims.User != nil && claims.User.ID != uuid.Nil {
-            user = claims.User
-        } else if claims.User == nil || claims.User.ID == uuid.Nil {
+        var owner *model.StoreOwner
+        if claims.Owner != nil && claims.Owner.ID != uuid.Nil {
+            owner = claims.Owner
+        } else if claims.Owner == nil || claims.Owner.ID == uuid.Nil {
             return nil,  ErrInvalidToken
         } else {
-            u, ferr := as.Repository.FetchUser(claims.User.ID) 
+            u, ferr := as.Repository.FetchUser(claims.Owner.ID) 
             if ferr != nil {
                 return nil,  ErrInvalidToken
             }
-            user = u
+            owner = u
         }
-        return user, nil
+        return owner, nil
     }
 
     refreshRec, err := as.Repository.FindRefreshTokenByAccessToken(accessToken.Token)

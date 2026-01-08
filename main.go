@@ -1,10 +1,13 @@
 package main
 
 import (
-	"auth_service/auth_service/helpers"
-	"auth_service/auth_service/repositories"
-	"auth_service/auth_service/resolvers"
-	"auth_service/auth_service/services"
+	schema "credit_system/auth_service/graph"
+	"credit_system/auth_service/handlers"
+	"credit_system/auth_service/helpers"
+	"credit_system/auth_service/repositories"
+	"credit_system/auth_service/resolvers"
+	"credit_system/auth_service/services"
+
 	"log"
 
 	"github.com/joho/godotenv"

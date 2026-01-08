@@ -1,9 +1,9 @@
 package schema
 
 import (
-    "auth_service/helpers"
-    "auth_service/model"
-    "auth_service/services"
+    "credit_system/auth_service/helpers"
+    "credit_system/auth_service/model"
+    "credit_system/auth_service/services"
 
     "fmt"
     "context"
@@ -11,7 +11,6 @@ import (
     "os"
     "time"
     "crypto/sha256"
-    "log"
 
     "github.com/graphql-go/graphql"
     // "github.com/google/uuid"
@@ -46,23 +45,12 @@ func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericAuthRespons
                 return helpers.FormatError(fmt.Errorf("invalid_token"))
             }
         } else {
-            owner, _ = userInterface.(*model.User)
+            owner, _ = userInterface.(*model.StoreOwner)
         }
 
         if owner == nil {
             return helpers.FormatError(fmt.Errorf("invalid_token"))
         }
-
-        go func() {
-            ctx := context.Background() // new context not tied to request
-            _, err := authService.SaveUserActivity(ctx, &model.UserActivityInput{
-                Activity: p.Info.FieldName,
-                ownerID:   owner.ID,
-            })
-            if err != nil {
-                log.Printf("[UserActivity] Failed to save activity: %v", err)
-            }
-        }()
 
         return next(p)
     }

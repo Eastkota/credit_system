@@ -1,10 +1,10 @@
 package schema
 
 import (
-	"auth_service/helpers"
-	"auth_service/model"
-	"auth_service/resolvers"
-	"auth_service/graph/scalar"
+	"credit_system/auth_service/helpers"
+	"credit_system/auth_service/model"
+	"credit_system/auth_service/resolvers"
+	"credit_system/core/scalar"
 
 	"github.com/graphql-go/graphql"
 )

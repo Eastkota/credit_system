@@ -1,7 +1,7 @@
 package services
 
 import (
-	"auth_service/model"
+	"credit_system/auth_service/model"
 
 	"github.com/google/uuid"
 )

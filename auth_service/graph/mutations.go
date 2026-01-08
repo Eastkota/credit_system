@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"auth_service/resolvers"
+	"credit_system/auth_service/resolvers"
 	
 	"github.com/graphql-go/graphql"
 )
