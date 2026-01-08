@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"auth_service/graph/scalar"
+	"credit_system/core/scalar"
 
 	"github.com/graphql-go/graphql"
 )

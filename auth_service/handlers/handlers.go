@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"auth_service/graph"
-	"auth_service/model"
+	"credit_system/auth_service/graph"
+	"credit_system/auth_service/model"
 
 	"context"
 	"encoding/json"

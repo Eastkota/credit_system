@@ -1,7 +1,7 @@
 package helpers
 
 import (
-    "auth_service/config"
+    "credit_system/config"
     
     "context"
     "database/sql"

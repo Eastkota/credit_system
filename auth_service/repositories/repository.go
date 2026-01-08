@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"auth_service/model"
+	"credit_system/auth_service/model"
 
 	"gorm.io/gorm"
 	"github.com/google/uuid"

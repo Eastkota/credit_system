@@ -1,12 +1,12 @@
 package main
 
 import (
-	"auth_service/handlers"
-	"auth_service/repositories"
-	"auth_service/resolvers"
-	"auth_service/services"
-	"auth_service/graph"
-	"auth_service/helpers"
+	"credit_system/auth_service/handlers"
+	"credit_system/auth_service/repositories"
+	"credit_system/auth_service/resolvers"
+	"credit_system/auth_service/services"
+	"credit_system/auth_service/graph"
+	"credit_system/auth_service/helpers"
 
 	"log"
 
