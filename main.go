@@ -4,10 +4,16 @@ import (
 	"credit_system/auth_service/graph"
 	"credit_system/auth_service/handlers"
 	"credit_system/auth_service/helpers"
+	customer_graph "credit_system/customer_management/customer_graph"
+
 	"credit_system/auth_service/repositories"
 	"credit_system/auth_service/resolvers"
 	"credit_system/auth_service/services"
 	"credit_system/core/schema"
+
+	customer_repo "credit_system/customer_management/customer_repositories"
+	customer_resolver "credit_system/customer_management/customer_resolvers"
+	customer_service "credit_system/customer_management/customer_services"
 
 	"log"
 
@@ -48,6 +54,13 @@ func main() {
 			// graph.CreditQueries(creditResolver),
 		),
 	})
+
+	customerRepository := customer_repo.NewCustomerRepository(db)
+	customerService := customer_service.NewCustomerService(customerRepository)
+	customerResolver := customer_resolver.NewCustomerResolver(customerService)
+
+	customerMutationType := customer_graph.NewCustomerMutationType(customerResolver)
+	customerQueryType := customer_graph.NewCustomerQueryType(customerResolver)
 
 	schema.InitSchema(queryType, mutationType)
 	graph.InitMiddleware(authService)
