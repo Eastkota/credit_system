@@ -43,7 +43,7 @@ func NewQueryType(resolver *resolvers.AuthResolver) *graphql.Object {
 					return resolver.CheckForExistingUser(p), nil
 				},
 			},
-			"fetchUser": &graphql.Field{
+			"FetchOwnerByID": &graphql.Field{
 				Type: SingleUserResponse,
 				Args: graphql.FieldConfigArgument{
 					"owner_id": &graphql.ArgumentConfig{
@@ -51,7 +51,7 @@ func NewQueryType(resolver *resolvers.AuthResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return resolver.FetchUser(p), nil
+					return resolver.FetchOwnerByID(p), nil
 				},
 			},
 			"fetchStore": &graphql.Field{
@@ -63,6 +63,18 @@ func NewQueryType(resolver *resolvers.AuthResolver) *graphql.Object {
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					return resolver.FetchStore(p), nil
+				},
+			},
+			"fetchStoreByOwnerID": &graphql.Field{
+				Type: StoreResponse,
+				Args: graphql.FieldConfigArgument{
+					"owner_id": &graphql.ArgumentConfig{
+						Type: scalar.UUID,
+					},
+				
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return resolver.FetchStoreByOwnerID(p), nil
 				},
 			},
 			"validateToken": &graphql.Field{

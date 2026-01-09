@@ -11,12 +11,13 @@ type Repository interface {
 
 	//User
 	CheckForExistingUser(field, value string) (*model.StoreOwner, error)
-	FetchUserByID(field, value string) (*model.StoreOwner, error)
+	FetchUser(field, value string) (*model.StoreOwner, error)
 	RegisterUser(signupInput *model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error)
-	// Login(loginId, password string) (*model.User, *model.Token, error)
-	// UpdateSingleDataByID(userID uuid.UUID, field, value string) (*model.User, error)
-	FetchUser(ownerID uuid.UUID) (*model.StoreOwner, error)
+	Login(PhoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error)
+	// UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error)
+	FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error)
 	FetchStore(storeID uuid.UUID) (*model.Store, error)
+	FetchStoreByOwnerID(ownerID uuid.UUID) (*model.Store, error)
 
 	// Token & Authentication
 	CreateToken(owner *model.StoreOwner, clientId, clientSecret string, tx *gorm.DB) (*model.Token, error)

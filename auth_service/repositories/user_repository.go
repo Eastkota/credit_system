@@ -24,7 +24,7 @@ func (repo *AuthRepository) CheckForExistingUser(field, value string) (*model.St
     return &store_owner, nil
 }
 
-func (repo *AuthRepository) FetchUserByID(field, value string) (*model.StoreOwner, error) {
+func (repo *AuthRepository) FetchUser(field, value string) (*model.StoreOwner, error) {
     var store_owner model.StoreOwner
     err := repo.DB.Where(fmt.Sprintf("%s = ?", field), value).First(&store_owner).Error
     if err != nil {
@@ -66,6 +66,7 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
             ID:          uuid.New(),
             Name:        signupInput.StoreName,
             OwnerID:     storeOwner.ID,
+            Address:     signupInput.Address,
         }
 
         if err := tx.Create(&storeResult).Error; err != nil {
@@ -95,50 +96,57 @@ func (repo *AuthRepository) FetchStore(storeID uuid.UUID) (*model.Store, error) 
     return &store, nil
 }
 
-// func (repo *AuthRepository) Login(loginId, password string) (*model.User, *model.Token, error) {
-//     var user *model.User
-//     var err error
+func (repo *AuthRepository) FetchStoreByOwnerID(ownerID uuid.UUID) (*model.Store, error) {
+    var store model.Store
+    if err := repo.DB.
+        Preload("Owner").
+        Where("owner_id = ?", ownerID).First(&store).Error; err != nil {
+        return nil, fmt.Errorf("store not found: %v", err)
+    }
+    return &store, nil
+}
+
+func (repo *AuthRepository) Login(PhoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error) {
+    var owner *model.StoreOwner
+    var store *model.Store
     
-//     emailRegx := regexp.MustCompile(`^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$`)
-//     if emailRegx.MatchString(loginId) {
-//         user, err = repo.FetchUserByLoginID("email", loginId)
-//     } else {
-//         user, err = repo.FetchUserByLoginID("mobile_no", loginId)
-//     }
-//     if err != nil {
-//         return nil, nil, err
-//     }
+    owner, err := repo.FetchUser("phone_number", PhoneNumber)
+    if err != nil {
+        return nil, nil, nil, err
+    }
+    if owner == nil {
+        return nil, nil, nil, fmt.Errorf("user not found")
+    }
 
-//     // if user.Status != "Active" {
-//     //     updateErr := repo.DB.Model(&user).Update("status", "Active").Error
-//     //     if updateErr != nil {
-//     //         return nil, nil, fmt.Errorf("failed to update user status: %w", updateErr)
-//     //     }
-//     //     user.Status = "Active"
-//     // }
+    if owner.Status == "Deleted" {
+        return nil, nil, nil, fmt.Errorf("user account is deleted")
+    }
 
-//     if user.Status == "Deleted" {
-//         return nil, nil, fmt.Errorf("user account is deleted")
-//     }
+    if !helpers.IsValidPassword(password, owner.Password) {
+        return nil, nil, nil, fmt.Errorf("invalid credentials")
+    }
 
-//     if helpers.IsValidPassword(password, user.Password) {
-//         tokenResult, err := repo.CreateToken(user, config.ClientId(), config.ClientSecret(), nil)
-//         if err != nil {
-//             return nil, nil, err
-//         }
-//         return user, tokenResult, nil
-//     }
+    store, err = repo.FetchStoreByOwnerID(owner.ID) 
+    if err != nil {
+        return nil, nil, nil, fmt.Errorf("could not find associated store: %v", err)
+    }
 
-//     return nil, nil, fmt.Errorf("invalid credentials")
-// }
+    // 5. Generate Token
+    tokenResult, err := repo.CreateToken(owner, config.ClientId(), config.ClientSecret(), nil)
+    if err != nil {
+        return nil, nil, nil, err
+    }
 
-// func (repo *AuthRepository) UpdateSingleDataByID(userID uuid.UUID, field, value string) (*model.User, error) {
+    return owner, tokenResult, store, nil
+}
+
+// func (repo *AuthRepository) UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error) {
 //     updateData := map[string]interface{}{
 //         field:   value,
 //         "updated_at": time.Now(),
 //     }
     
-//     result := repo.DB.Model(&model.User{}).Where("id = ?", userID).Updates(updateData)
+//     result := repo.DB.Model(&model.StoreOwner{}).Where("id = ?", ownerID).Updates(updateData)
 
 //     if result.Error != nil {
 //         return nil, fmt.Errorf("failed to update user: %v", result.Error)
@@ -148,15 +156,15 @@ func (repo *AuthRepository) FetchStore(storeID uuid.UUID) (*model.Store, error) 
 //         return nil, fmt.Errorf("user not found with ID: %v", userID)
 //     }
 
-//     var updatedUser model.User
-//     if err := repo.DB.First(&updatedUser, "id = ?", userID).Error; err != nil {
+//     var updatedOwner model.StoreOwner
+//     if err := repo.DB.First(&updatedOwner, "id = ?", OwnerID).Error; err != nil {
 //         return nil, fmt.Errorf("failed to retrieve updated user: %v", err)
 //     }
 
 //     return &updatedUser, nil
 // }
 
-func (repo *AuthRepository) FetchUser(ownerID uuid.UUID) (*model.StoreOwner, error) {
+func (repo *AuthRepository) FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error) {
     var owner model.StoreOwner
     if err := repo.DB.First(&owner, "id = ?", ownerID).Error; err != nil {
         return nil, fmt.Errorf("owner not found: %v", err)
@@ -192,100 +200,3 @@ func (repo *AuthRepository) FetchUser(ownerID uuid.UUID) (*model.StoreOwner, err
 //     return &updatedUser, nil
 // }
 
-// func (repo *AuthRepository) CreateUserActivity(ctx context.Context, inputActivityType string, userID uuid.UUID) (*model.UserActivity, error) {
-//     now := time.Now()
-//     currentMonth := now.Month()
-//     currentYear := now.Year()
-
-//     var canonicalActivityName string
-//     if strings.Contains(inputActivityType, "video") || strings.Contains(inputActivityType, "Video") {
-//         canonicalActivityName = "video_watched"
-//     } else {
-//         canonicalActivityName = "others"       
-//     }
-
-//     var userActivity model.UserActivity
-    
-//     result := repo.DB.WithContext(ctx).
-//         Where("user_id = ?", userID).
-//         Where("activity = ?", canonicalActivityName).
-//         Where("month = ?", currentMonth).
-//         Where("year = ?", currentYear).
-//         First(&userActivity)
-    
-//     if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-//         return nil, result.Error
-//     }
-
-//     if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-//         userActivity = model.UserActivity{
-//             ID:     uuid.New(),
-//             UserID: userID,
-//             Month:  int(currentMonth),
-//             Year:   currentYear,
-//             Activity: canonicalActivityName,
-//             Count:  1,
-//         }
-
-//         if err := repo.DB.WithContext(ctx).Create(&userActivity).Error; err != nil {
-//             return nil, err
-//         }
-
-//     } else {
-//         if err := repo.DB.WithContext(ctx).
-//             Model(&userActivity).
-//             Where("id = ?", userActivity.ID).
-//             Update("count", gorm.Expr("count + ?", 1)). 
-//             Error; err != nil {
-//             return nil, err
-//         }
-        
-//         if err := repo.DB.WithContext(ctx).
-//             Preload("User").
-//             First(&userActivity, "id = ?", userActivity.ID).
-//             Error; err != nil {
-//             return nil, err
-//         }
-//     }
-
-//     if userActivity.User == nil {
-//         repo.DB.WithContext(ctx).Preload("User").First(&userActivity, "id = ?", userActivity.ID)
-//     }
-
-//     return &userActivity, nil
-// }
-
-// func (repo *AuthRepository) CreateGameActivity(ctx context.Context, userID uuid.UUID) error {
-//     now := time.Now()
-//     currentMonth := now.Month()
-//     currentYear := now.Year()
-//     var canonicalActivityName = "CheyCheyActivity"
-
-//     var userActivity model.UserActivity
-    
-//     result := repo.DB.WithContext(ctx).
-//         Where("user_id = ? AND activity = ? AND month = ? AND year = ?", 
-//             userID, canonicalActivityName, int(currentMonth), currentYear).
-//         First(&userActivity)
-    
-//     if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-//         return result.Error
-//     }
-
-//     if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-//         newActivity := model.UserActivity{
-//             ID:       uuid.New(),
-//             UserID:   userID,
-//             Month:    int(currentMonth),
-//             Year:     currentYear,
-//             Activity: canonicalActivityName,
-//             Count:    1,
-//         }
-//         return repo.DB.WithContext(ctx).Create(&newActivity).Error
-//     } 
-
-//     return repo.DB.WithContext(ctx).
-//         Model(&userActivity).
-//         Update("count", gorm.Expr("count + ?", 1)). 
-//         Error
-// }

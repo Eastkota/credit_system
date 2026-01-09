@@ -27,8 +27,11 @@ var Store = graphql.NewObject(graphql.ObjectConfig{
 		"id": &graphql.Field{Type: scalar.UUID},
 		"name": &graphql.Field{Type: graphql.String},
 		"owner_id": &graphql.Field{Type: scalar.UUID},
+		"address": &graphql.Field{Type: graphql.String},
 		"created_at": &graphql.Field{Type: scalar.Time},
 		"updated_at": &graphql.Field{Type: scalar.Time},
+
+		"owner": &graphql.Field{Type: StoreOwner},
 	},
 })
 

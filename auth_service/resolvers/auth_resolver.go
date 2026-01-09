@@ -90,24 +90,38 @@ func (ar *AuthResolver) FetchStore(p graphql.ResolveParams) *model.GenericAuthRe
 	}
 }
 
-// func (ar *AuthResolver) Login(p graphql.ResolveParams) *model.GenericAuthResponse {
-// 	loginId := p.Args["login_id"].(string)
-// 	password := p.Args["password"].(string)
-// 	user, token, profile, membership, err := ar.Services.Login(loginId, password)
-// 	if err != nil {
-// 		return helpers.FormatError(err)
-// 	}
+func (ar *AuthResolver) FetchStoreByOwnerID(p graphql.ResolveParams) *model.GenericAuthResponse {
+	ownerID := p.Args["owner_id"].(uuid.UUID)	
+	result, err := ar.Services.FetchStoreByOwnerID(ownerID)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+	return &model.GenericAuthResponse{
+		Data: &model.StoreResult{
+			Store: result,
+		},
+		Error: nil,
+	}
+}
 
-// 	return &model.GenericAuthResponse{
-// 		Data: &model.LoginSuccessData{
-// 			User:       user,
-// 			Profile:    profile,
-// 			Token:      token,
-// 			Membership: membership,
-// 		},
-// 		Error: nil,
-// 	}
-// }
+
+func (ar *AuthResolver) Login(p graphql.ResolveParams) *model.GenericAuthResponse {
+	phoneNumber := p.Args["phone_number"].(string)
+	password := p.Args["password"].(string)
+	owner, token, store, err := ar.Services.Login(phoneNumber, password)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericAuthResponse{
+		Data: &model.LoginSuccessData{
+			Owner:       owner,
+			Store:    store,
+			Token:      token,
+		},
+		Error: nil,
+	}
+}
 
 func (ar *AuthResolver) ValidateToken(p graphql.ResolveParams) *model.GenericAuthResponse {
 	tokenString := p.Args["token"].(string)
@@ -224,9 +238,9 @@ func (ar *AuthResolver) RefreshToken(p graphql.ResolveParams) *model.GenericAuth
 // 	}
 // }
 
-func (ar *AuthResolver) FetchUser(p graphql.ResolveParams) *model.GenericAuthResponse {
+func (ar *AuthResolver) FetchOwnerByID(p graphql.ResolveParams) *model.GenericAuthResponse {
 	ownerID := p.Args["owner_id"].(uuid.UUID)
-	result, err := ar.Services.FetchUser(ownerID)
+	result, err := ar.Services.FetchOwnerByID(ownerID)
 	if err != nil {
 		return helpers.FormatError(err)
 	}

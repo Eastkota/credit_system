@@ -27,6 +27,9 @@ var SignupInput = graphql.NewInputObject(
 			"store_name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
+			"address": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
 		},
 	},
 )

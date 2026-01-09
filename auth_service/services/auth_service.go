@@ -52,38 +52,23 @@ func (as *AuthService) FetchStore(storeID uuid.UUID) (*model.Store, error) {
 	return as.Repository.FetchStore(storeID)
 }
 
-// func (as *AuthService) Login(loginId, password string) (*model.User, *model.Token, *model.AuthUserProfile, *model.AuthUserMembership, error) {
-// 	user, token, err := as.Repository.Login(loginId, password)
-// 	if err != nil {
-// 		return nil, nil, nil, nil, err
-// 	}
+func (as *AuthService) FetchStoreByOwnerID(ownerID uuid.UUID) (*model.Store, error) {
+	return as.Repository.FetchStoreByOwnerID(ownerID)
+}
 
-// 	profile, err := helpers.GetUserProfile(user.ID)
-// 	if err != nil {
-// 		return nil, nil, nil, nil, err
-// 	}
-// 	membership, err := helpers.GetMembership(user.ID)
-// 	if err != nil {
-// 		membership = nil
-// 	}
-// 	userLimit := 1
-//     if membership != nil && membership.MembershipDuration != nil && membership.MembershipDuration.Package != nil {
-//         userLimit = membership.MembershipDuration.Package.UserLimit
-//     }
+func (as *AuthService) Login(phoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error) {
+	owner, token, store, err := as.Repository.Login(phoneNumber, password)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 
-// 	tokens, err := as.Repository.FindAccessTokensForUser(user.ID)
-// 	if err != nil {
-// 		return nil, nil, nil, nil, fmt.Errorf("failed to fetch tokens: %v", err)
-// 	}
+	store, err = as.Repository.FetchStore(store.ID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 
-// 	if len(tokens) > userLimit {
-// 		err := as.Repository.DeleteOldestAccessToken(user.ID)
-// 		if err != nil {
-// 			return nil, nil, nil, nil, fmt.Errorf("failed to revoke oldest access token: %v", err)
-// 		}
-// 	}
-// 	return user, token, profile, membership, nil
-// }
+	return owner, token, store, nil
+}
 
 // func (as *AuthService) Logout(tokenId string) error {
 // 	if tokenId == "" {
@@ -145,7 +130,7 @@ func (as *AuthService) ValidateToken(authHeader string) (*model.StoreOwner, erro
         } else if claims.Owner == nil || claims.Owner.ID == uuid.Nil {
             return nil,  ErrInvalidToken
         } else {
-            u, ferr := as.Repository.FetchUser(claims.Owner.ID) 
+            u, ferr := as.Repository.FetchOwnerByID(claims.Owner.ID) 
             if ferr != nil {
                 return nil,  ErrInvalidToken
             }
@@ -204,7 +189,7 @@ func (as *AuthService) RefreshToken(refreshTokenStr string) (*model.StoreOwner, 
         if claims.Owner == nil || claims.Owner.ID == uuid.Nil {
             return nil, nil, nil, ErrInvalidToken
         } else {
-            u, ferr := as.Repository.FetchUser(claims.Owner.ID) 
+            u, ferr := as.Repository.FetchOwnerByID(claims.Owner.ID) 
             if ferr != nil {
                 return nil, nil, nil, ErrInvalidToken
             }
@@ -289,21 +274,21 @@ func (as *AuthService) IsValidToken(tokenString string) (string, bool) {
 // 	return nil
 // }
 
-// func (as *AuthService) UpdateSingleDataByID(userID uuid.UUID, field, value, password string) (*model.User, error) {
-// 	user, err := as.Repository.FetchUser(userID)
+// func (as *AuthService) UpdateSingleDataByID(ownerID uuid.UUID, field, value, password string) (*model.StoreOwner, error) {
+// 	owner, err := as.Repository.FetchUser(OwnerID)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 
-// 	if !helpers.IsValidPassword(password, user.Password) {
+// 	if !helpers.IsValidPassword(password, owner.Password) {
 // 		return nil, fmt.Errorf("authentication failed with provided password")
 // 	}
 
-// 	return as.Repository.UpdateSingleDataByID(userID, field, value)
+// 	return as.Repository.UpdateSingleDataByID(ownerID, field, value)
 // }
 
-func (as *AuthService) FetchUser(ownerID uuid.UUID) (*model.StoreOwner, error) {
-	return as.Repository.FetchUser(ownerID)
+func (as *AuthService) FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error) {
+	return as.Repository.FetchOwnerByID(ownerID)
 }
 
 // func (as *AuthService) ResetPassword(userID uuid.UUID, password, confirmPassword string) error {

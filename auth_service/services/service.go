@@ -12,12 +12,13 @@ type Services interface {
 	RefreshToken(tokenString string) (*model.StoreOwner, *model.Token, *model.Store, error)
 	IsValidToken(tokenString string) (string, bool)
 	Signup(signupData model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error)
-	// Login(loginId, password string) (*model.User, *model.Token, *model.AuthUserProfile, *model.AuthUserMembership, error)
+	Login(phoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error)
 	// Logout(tokenId string) error
 	// UpdatePassword(updatePaswordData model.UpdatePasswordInput) error
 	// UpdateSingleDataByID(userId uuid.UUID, field, value, password string) (*model.User, error)
-	FetchUser(ownerID uuid.UUID) (*model.StoreOwner, error)
+	FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error)
 	FetchStore(storeID uuid.UUID) (*model.Store, error)
+	FetchStoreByOwnerID(ownerID uuid.UUID) (*model.Store, error)
 	// ResetPassword(userId uuid.UUID, password, confirmPassword string) (error)
 
 	// SaveUserActivity(ctx context.Context, input *model.UserActivityInput) (*model.UserActivity, error)

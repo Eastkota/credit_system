@@ -30,4 +30,5 @@ type OwnerResult struct {
 
 type StoreResult struct {
     Store       *Store        `json:"store"`
+    Owner       *StoreOwner        `json:"owner"`
 }

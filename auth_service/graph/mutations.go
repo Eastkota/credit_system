@@ -10,20 +10,20 @@ func NewMutationType(resolver *resolvers.AuthResolver) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: graphql.Fields{
-			// "login": &graphql.Field{
-			// 	Type: LoginResponse,
-			// 	Args: graphql.FieldConfigArgument{
-			// 		"login_id": &graphql.ArgumentConfig{
-			// 			Type: graphql.NewNonNull(graphql.String),
-			// 		},
-			// 		"password": &graphql.ArgumentConfig{
-			// 			Type: graphql.NewNonNull(graphql.String),
-			// 		},
-			// 	},
-			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			// 		return PublicAuthMiddleware(resolver.Login)(p), nil
-			// 	},
-			// },
+			"login": &graphql.Field{
+				Type: LoginResponse,
+				Args: graphql.FieldConfigArgument{
+					"phone_number": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"password": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return PublicAuthMiddleware(resolver.Login)(p), nil
+				},
+			},
 			"refreshToken": &graphql.Field{
 				Type: LoginResponse,
 				Args: graphql.FieldConfigArgument{
@@ -39,7 +39,8 @@ func NewMutationType(resolver *resolvers.AuthResolver) *graphql.Object {
 			// "logout": &graphql.Field{
 			// 	Type: GenericAuthResponse,
 			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			// 		return AuthMiddleware(resolver.Logout)(p), nil
+			// 		return resolver.Logout(p), nil
+			// 		// return AuthMiddleware(resolver.Logout)(p), nil
 			// 	},
 			// },
 			"signup": &graphql.Field{
