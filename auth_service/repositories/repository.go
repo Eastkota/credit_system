@@ -11,7 +11,7 @@ type Repository interface {
 
 	//User
 	CheckForExistingUser(field, value string) (*model.StoreOwner, error)
-	FetchUser(field, value string) (*model.StoreOwner, error)
+	FetchOwner(field, value string) (*model.StoreOwner, error)
 	RegisterUser(signupInput *model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error)
 	Login(PhoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error)
 	UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error)

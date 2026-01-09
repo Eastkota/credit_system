@@ -14,7 +14,7 @@ type Services interface {
 	Signup(signupData model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error)
 	Login(phoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error)
 	// Logout(tokenId string) error
-	// UpdatePassword(updatePaswordData model.UpdatePasswordInput) error
+	UpdatePassword(updatePaswordData model.UpdatePasswordInput) error
 	UpdateSingleDataByID(ownerID uuid.UUID, field, value, password string) (*model.StoreOwner, error)
 	FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error)
 	FetchStore(storeID uuid.UUID) (*model.Store, error)

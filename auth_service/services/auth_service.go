@@ -240,40 +240,40 @@ func (as *AuthService) IsValidToken(tokenString string) (string, bool) {
 	return "", false
 }
 
-// func (as *AuthService) UpdatePassword(updatePaswordData model.UpdatePasswordInput) error {
-// 	if updatePaswordData.CurrentPassword == "" {
-// 		return fmt.Errorf("current password cannot be empty")
-// 	}
-// 	if updatePaswordData.Password == "" || updatePaswordData.ConfirmPassword == "" {
-// 		return fmt.Errorf("new password and confirm password cannot be empty")
-// 	}
-// 	if updatePaswordData.Password != updatePaswordData.ConfirmPassword {
-// 		return fmt.Errorf("new password and confirm password doesnot match")
-// 	}
+func (as *AuthService) UpdatePassword(updatePaswordData model.UpdatePasswordInput) error {
+	if updatePaswordData.CurrentPassword == "" {
+		return fmt.Errorf("current password cannot be empty")
+	}
+	if updatePaswordData.Password == "" || updatePaswordData.ConfirmPassword == "" {
+		return fmt.Errorf("new password and confirm password cannot be empty")
+	}
+	if updatePaswordData.Password != updatePaswordData.ConfirmPassword {
+		return fmt.Errorf("new password and confirm password doesnot match")
+	}
 
-// 	user, err := as.Repository.FetchUser(updatePaswordData.UserId)
-// 	if err != nil {
-// 		return err
-// 	}
+	owner, err := as.Repository.FetchOwner("id", updatePaswordData.OwnerId.String())
+	if err != nil {
+		return err
+	}
 
-// 	if !helpers.IsValidPassword(updatePaswordData.CurrentPassword, user.Password) {
-// 		return fmt.Errorf("current doesnot match")
-// 	}
+	if !helpers.IsValidPassword(updatePaswordData.CurrentPassword, owner.Password) {
+		return fmt.Errorf("current doesnot match")
+	}
 
-// 	password, err := helpers.EncryptPassword(updatePaswordData.Password)
+	password, err := helpers.EncryptPassword(updatePaswordData.Password)
 
-// 	if err != nil {
-// 		return err
-// 	}
+	if err != nil {
+		return err
+	}
 
-// 	_, err = as.Repository.UpdateSingleDataByID(updatePaswordData.UserId, "password", password)
+	_, err = as.Repository.UpdateSingleDataByID(updatePaswordData.OwnerId, "password", password)
 
-// 	if err != nil {
-// 		return fmt.Errorf("failed to update password: %v", err)
-// 	}
+	if err != nil {
+		return fmt.Errorf("failed to update password: %v", err)
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func (as *AuthService) UpdateSingleDataByID(ownerID uuid.UUID, field, value, password string) (*model.StoreOwner, error) {
 	owner, err := as.Repository.FetchOwnerByID(ownerID)
