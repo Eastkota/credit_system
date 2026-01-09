@@ -1,4 +1,4 @@
-package schema
+package graph
 
 import (
 	"credit_system/auth_service/resolvers"
@@ -83,23 +83,24 @@ func NewMutationType(resolver *resolvers.AuthResolver) *graphql.Object {
 			// 		return PublicAuthMiddleware(resolver.ResetPassword)(p), nil
 			// 	},
 			// },
-			// "updateSingleUserDataById": &graphql.Field{
-			// 	Type: SingleUserResponse,
-			// 	Args: graphql.FieldConfigArgument{
-			// 		"field": &graphql.ArgumentConfig{
-			// 			Type: graphql.NewNonNull(graphql.String),
-			// 		},
-			// 		"value": &graphql.ArgumentConfig{
-			// 			Type: graphql.NewNonNull(graphql.String),
-			// 		},
-			// 		"password": &graphql.ArgumentConfig{
-			// 			Type: graphql.NewNonNull(graphql.String),
-			// 		},
-			// 	},
-			// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			// 		return AuthMiddleware(resolver.UpdateSingleDataByID)(p), nil
-			// 	},
-			// },
+			"updateSingleUserDataById": &graphql.Field{
+				Type: SingleUserResponse,
+				Args: graphql.FieldConfigArgument{
+					"field": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"value": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"password": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					// return resolver.UpdateSingleDataByID(p), nil
+					return AuthMiddleware(resolver.UpdateSingleDataByID)(p), nil
+				},
+			},
 			// "deleteUser" : &graphql.Field{
 			// 	Type: SingleUserResponse,
 			// 	Args: graphql.FieldConfigArgument{

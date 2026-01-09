@@ -4,6 +4,7 @@ import (
 	"credit_system/config"
 	"credit_system/auth_service/model"
 	"credit_system/auth_service/repositories"
+    "credit_system/auth_service/helpers"
 
 	"fmt"
 	"time"
@@ -274,18 +275,18 @@ func (as *AuthService) IsValidToken(tokenString string) (string, bool) {
 // 	return nil
 // }
 
-// func (as *AuthService) UpdateSingleDataByID(ownerID uuid.UUID, field, value, password string) (*model.StoreOwner, error) {
-// 	owner, err := as.Repository.FetchUser(OwnerID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (as *AuthService) UpdateSingleDataByID(ownerID uuid.UUID, field, value, password string) (*model.StoreOwner, error) {
+	owner, err := as.Repository.FetchOwnerByID(ownerID)
+	if err != nil {
+		return nil, err
+	}
 
-// 	if !helpers.IsValidPassword(password, owner.Password) {
-// 		return nil, fmt.Errorf("authentication failed with provided password")
-// 	}
+	if !helpers.IsValidPassword(password, owner.Password) {
+		return nil, fmt.Errorf("authentication failed with provided password")
+	}
 
-// 	return as.Repository.UpdateSingleDataByID(ownerID, field, value)
-// }
+	return as.Repository.UpdateSingleDataByID(ownerID, field, value)
+}
 
 func (as *AuthService) FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error) {
 	return as.Repository.FetchOwnerByID(ownerID)
@@ -316,23 +317,4 @@ func (as *AuthService) FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, err
 
 // func (as *AuthService) DeleteUser(ctx context.Context, userID uuid.UUID, status, password string) (*model.User, error) {
 // 	return as.Repository.DeleteUser(ctx, userID, status, password)
-// }
-
-
-// func (as *AuthService) SaveUserActivity(ctx context.Context, input *model.UserActivityInput) (*model.UserActivity, error) {
-//     loadedActivity, err := as.Repository.CreateUserActivity(ctx, input.Activity, input.UserID)
-//     if err != nil {
-//         return nil, err
-//     }
-
-//     return loadedActivity, nil
-// }
-
-// func (as *AuthService) SaveGameActivity(ctx context.Context, userID uuid.UUID) error {
-//     err := as.Repository.CreateGameActivity(ctx, userID)
-//     if err != nil {
-//         return err
-//     }
-
-//     return nil
 // }

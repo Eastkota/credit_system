@@ -7,6 +7,8 @@ import (
 
     "errors"
     "fmt"
+    "time"
+
 
     "gorm.io/gorm"
 	"github.com/google/uuid"	
@@ -140,29 +142,29 @@ func (repo *AuthRepository) Login(PhoneNumber, password string) (*model.StoreOwn
     return owner, tokenResult, store, nil
 }
 
-// func (repo *AuthRepository) UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error) {
-//     updateData := map[string]interface{}{
-//         field:   value,
-//         "updated_at": time.Now(),
-//     }
+func (repo *AuthRepository) UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error) {
+    updateData := map[string]interface{}{
+        field:   value,
+        "updated_at": time.Now(),
+    }
     
-//     result := repo.DB.Model(&model.StoreOwner{}).Where("id = ?", ownerID).Updates(updateData)
+    result := repo.DB.Model(&model.StoreOwner{}).Where("id = ?", ownerID).Updates(updateData)
 
-//     if result.Error != nil {
-//         return nil, fmt.Errorf("failed to update user: %v", result.Error)
-//     }
+    if result.Error != nil {
+        return nil, fmt.Errorf("failed to update user: %v", result.Error)
+    }
 
-//     if result.RowsAffected == 0 {
-//         return nil, fmt.Errorf("user not found with ID: %v", userID)
-//     }
+    if result.RowsAffected == 0 {
+        return nil, fmt.Errorf("user not found with ID: %v", ownerID)
+    }
 
-//     var updatedOwner model.StoreOwner
-//     if err := repo.DB.First(&updatedOwner, "id = ?", OwnerID).Error; err != nil {
-//         return nil, fmt.Errorf("failed to retrieve updated user: %v", err)
-//     }
+    var updatedOwner model.StoreOwner
+    if err := repo.DB.First(&updatedOwner, "id = ?", ownerID).Error; err != nil {
+        return nil, fmt.Errorf("failed to retrieve updated user: %v", err)
+    }
 
-//     return &updatedUser, nil
-// }
+    return &updatedOwner, nil
+}
 
 func (repo *AuthRepository) FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error) {
     var owner model.StoreOwner

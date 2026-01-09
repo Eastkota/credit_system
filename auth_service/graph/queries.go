@@ -1,10 +1,11 @@
-package schema
+package graph
 
 import (
 	"credit_system/auth_service/helpers"
 	"credit_system/auth_service/model"
 	"credit_system/auth_service/resolvers"
 	"credit_system/core/scalar"
+	"credit_system/core/schema"
 
 	"github.com/graphql-go/graphql"
 )
@@ -16,7 +17,7 @@ func NewQueryType(resolver *resolvers.AuthResolver) *graphql.Object {
 			"service": &graphql.Field{
 				Type: graphql.NewNonNull(Service),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					schema, err := GetSchema()
+					schema, err := schema.GetSchema()
 					if err != nil {
 						return nil, err
 					}

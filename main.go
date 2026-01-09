@@ -1,12 +1,13 @@
 package main
 
 import (
-	schema "credit_system/auth_service/graph"
+	"credit_system/auth_service/graph"
 	"credit_system/auth_service/handlers"
 	"credit_system/auth_service/helpers"
 	"credit_system/auth_service/repositories"
 	"credit_system/auth_service/resolvers"
 	"credit_system/auth_service/services"
+	"credit_system/core/schema"
 
 	"log"
 
@@ -30,11 +31,11 @@ func main() {
 	service := services.NewService(repository)
 	resolver := resolvers.NewResolver(service)
 
-	mutationType := schema.NewMutationType(resolver)
-	queryType := schema.NewQueryType(resolver)
+	mutationType := graph.NewMutationType(resolver)
+	queryType := graph.NewQueryType(resolver)
 
 	schema.InitSchema(queryType, mutationType)
-	schema.InitMiddleware(service)
+	graph.InitMiddleware(service)
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

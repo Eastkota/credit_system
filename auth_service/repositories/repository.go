@@ -14,7 +14,7 @@ type Repository interface {
 	FetchUser(field, value string) (*model.StoreOwner, error)
 	RegisterUser(signupInput *model.SignupInput) (*model.StoreOwner, *model.Token, *model.Store, error)
 	Login(PhoneNumber, password string) (*model.StoreOwner, *model.Token, *model.Store, error)
-	// UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error)
+	UpdateSingleDataByID(ownerID uuid.UUID, field, value string) (*model.StoreOwner, error)
 	FetchOwnerByID(ownerID uuid.UUID) (*model.StoreOwner, error)
 	FetchStore(storeID uuid.UUID) (*model.Store, error)
 	FetchStoreByOwnerID(ownerID uuid.UUID) (*model.Store, error)

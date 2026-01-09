@@ -1,4 +1,4 @@
-package schema
+package graph
 
 import (
 	"credit_system/core/scalar"

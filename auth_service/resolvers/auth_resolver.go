@@ -6,6 +6,7 @@ import (
 	"credit_system/auth_service/services"
 
 	"encoding/json"
+	"fmt"
 
 	"github.com/graphql-go/graphql"
 	"github.com/google/uuid"
@@ -213,30 +214,34 @@ func (ar *AuthResolver) RefreshToken(p graphql.ResolveParams) *model.GenericAuth
 // 		Error: nil,
 // 	}
 // }
-// func (ar *AuthResolver) UpdateSingleDataByID(p graphql.ResolveParams) *model.GenericAuthResponse {
-// 	ctx := p.Context
-//     user := ctx.Value(model.UserKey).(*model.User)
-// 	if user == nil {
-// 		return helpers.FormatError(fmt.Errorf("invalid_token"))
-// 	}
-		
-// 	field := p.Args["field"].(string)
-// 	value := p.Args["value"].(string)
-// 	password := p.Args["password"].(string)
 
-// 	userID := user.ID 
-// 	//Implement  the login to fetch user form Authorization
-// 	result, err := ar.Services.UpdateSingleDataByID(userID, field, value, password)
-// 	if err != nil {
-// 		return helpers.FormatError(err)
-// 	}
-// 	return &model.GenericAuthResponse{
-// 		Data: &model.UserResult{
-// 			User: result,
-// 		},
-// 		Error: nil,
-// 	}
-// }
+func (ar *AuthResolver) UpdateSingleDataByID(p graphql.ResolveParams) *model.GenericAuthResponse {
+	ctx := p.Context
+    val := ctx.Value(model.UserKey)
+    
+    // 2. Safe Type Assertion
+    owner, ok := val.(*model.StoreOwner)
+    if !ok || owner == nil {
+        return helpers.FormatError(fmt.Errorf("unauthorized: user session not found"))
+    }
+		
+	field := p.Args["field"].(string)
+	value := p.Args["value"].(string)
+	password := p.Args["password"].(string)
+
+	ownerID := owner.ID 
+	//Implement  the login to fetch user form Authorization
+	result, err := ar.Services.UpdateSingleDataByID(ownerID, field, value, password)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+	return &model.GenericAuthResponse{
+		Data: &model.OwnerResult{
+			Owner: result,
+		},
+		Error: nil,
+	}
+}
 
 func (ar *AuthResolver) FetchOwnerByID(p graphql.ResolveParams) *model.GenericAuthResponse {
 	ownerID := p.Args["owner_id"].(uuid.UUID)
