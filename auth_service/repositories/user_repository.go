@@ -26,7 +26,7 @@ func (repo *AuthRepository) CheckForExistingUser(field, value string) (*model.St
     return &store_owner, nil
 }
 
-func (repo *AuthRepository) FetchUser(field, value string) (*model.StoreOwner, error) {
+func (repo *AuthRepository) FetchOwner(field, value string) (*model.StoreOwner, error) {
     var store_owner model.StoreOwner
     err := repo.DB.Where(fmt.Sprintf("%s = ?", field), value).First(&store_owner).Error
     if err != nil {
@@ -112,7 +112,7 @@ func (repo *AuthRepository) Login(PhoneNumber, password string) (*model.StoreOwn
     var owner *model.StoreOwner
     var store *model.Store
     
-    owner, err := repo.FetchUser("phone_number", PhoneNumber)
+    owner, err := repo.FetchOwner("phone_number", PhoneNumber)
     if err != nil {
         return nil, nil, nil, err
     }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"credit_system/auth_service/graph"
-	"credit_system/auth_service/handlers"
+	"credit_system/core/handlers"
 	"credit_system/auth_service/helpers"
 	"credit_system/auth_service/repositories"
 	"credit_system/auth_service/resolvers"
