@@ -14,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/graphql-go/graphql"
 )
 
 func main() {
@@ -27,15 +28,29 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect to database: " + err.Error())
 	}
-	repository := repositories.NewRepository(db)
-	service := services.NewService(repository)
-	resolver := resolvers.NewResolver(service)
+	authRepository := repositories.NewAuthRepository(db)
+	authService := services.NewAuthService(authRepository)
+	authResolver := resolvers.NewAuthResolver(authService)
 
-	mutationType := graph.NewMutationType(resolver)
-	queryType := graph.NewQueryType(resolver)
+	mutationType := graphql.NewObject(graphql.ObjectConfig{
+		Name: "Mutation",
+		Fields: schema.MergeFields(
+			graph.AuthMutations(authResolver),
+			// graph.UserMutations(userResolver),
+			// graph.CreditMutations(creditResolver),
+		),
+	})
+	queryType := graphql.NewObject(graphql.ObjectConfig{
+		Name: "Query",
+		Fields: schema.MergeFields(
+			graph.AuthQueries(authResolver),
+			// graph.UserQueries(userResolver),
+			// graph.CreditQueries(creditResolver),
+		),
+	})
 
 	schema.InitSchema(queryType, mutationType)
-	graph.InitMiddleware(service)
+	graph.InitMiddleware(authService)
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
