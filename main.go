@@ -17,10 +17,10 @@ import (
 
 	"log"
 
+	"github.com/graphql-go/graphql"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/graphql-go/graphql"
 )
 
 func main() {
@@ -38,11 +38,15 @@ func main() {
 	authService := services.NewAuthService(authRepository)
 	authResolver := resolvers.NewAuthResolver(authService)
 
+	customerRepository := customer_repo.NewCustomerRepository(db)
+	customerService := customer_service.NewCustomerService(customerRepository)
+	customerResolver := customer_resolver.NewCustomerResolver(customerService)
+
 	mutationType := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: schema.MergeFields(
 			graph.AuthMutations(authResolver),
-			// graph.UserMutations(userResolver),
+			customer_graph.NewCustomerMutationType(customerResolver),
 			// graph.CreditMutations(creditResolver),
 		),
 	})
@@ -54,13 +58,6 @@ func main() {
 			// graph.CreditQueries(creditResolver),
 		),
 	})
-
-	customerRepository := customer_repo.NewCustomerRepository(db)
-	customerService := customer_service.NewCustomerService(customerRepository)
-	customerResolver := customer_resolver.NewCustomerResolver(customerService)
-
-	customerMutationType := customer_graph.NewCustomerMutationType(customerResolver)
-	customerQueryType := customer_graph.NewCustomerQueryType(customerResolver)
 
 	schema.InitSchema(queryType, mutationType)
 	graph.InitMiddleware(authService)
