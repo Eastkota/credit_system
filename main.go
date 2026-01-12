@@ -5,6 +5,7 @@ import (
 	"credit_system/auth_service/helpers"
 	"credit_system/core/handlers"
 	customer_graph "credit_system/customer_management/customer_graph"
+	payment_graph "credit_system/credit_payment_service/payment_graph"
 	"log"
 
 	"credit_system/auth_service/repositories"
@@ -15,6 +16,10 @@ import (
 	customer_repo "credit_system/customer_management/customer_repositories"
 	customer_resolver "credit_system/customer_management/customer_resolvers"
 	customer_service "credit_system/customer_management/customer_services"
+	
+	payment_repo "credit_system/credit_payment_service/payment_repositories"
+	payment_resolver "credit_system/credit_payment_service/payment_resolvers"
+	payment_service "credit_system/credit_payment_service/payment_services"
 
 	"github.com/graphql-go/graphql"
 	"github.com/joho/godotenv"
@@ -43,15 +48,22 @@ func main() {
 	customerService := customer_service.NewCustomerService(customerRepository)
 	customerResolver := customer_resolver.NewCustomerResolver(customerService)
 
+	// Initialize Payment Module
+	paymentRepository := payment_repo.NewPaymentRepository(db)
+	paymentService := payment_service.NewPaymentService(paymentRepository)
+	paymentResolver := payment_resolver.NewPaymentResolver(paymentService)
+
 	// Build GraphQL Schema
 	queryFields := schema.MergeFields(
 		graph.AuthQueries(authResolver),
 		customer_graph.CustomerQueries(customerResolver),
+		payment_graph.NewPaymentQueryType(paymentResolver),
 	)
 
 	mutationFields := schema.MergeFields(
 		graph.AuthMutations(authResolver),
 		customer_graph.CustomerMutations(customerResolver),
+		payment_graph.NewPaymentMutationType(paymentResolver),
 	)
 
 	queryType := graphql.NewObject(graphql.ObjectConfig{

@@ -1,5 +1,9 @@
 package graph
 
+import (
+	"github.com/graphql-go/graphql"
+)
+
 var CreatePaymentRequest = graphql.NewObject(graphql.ObjectConfig{
 	Name: "CreatePaymentRequest",
 	Fields: graphql.Fields{
@@ -8,7 +12,5 @@ var CreatePaymentRequest = graphql.NewObject(graphql.ObjectConfig{
 		"amount": &graphql.Field{Type: graphql.NewNonNull(graphql.String)},
 		"journal_number": &graphql.Field{Type: graphql.NewNonNull(graphql.String)},
 		"status": &graphql.Field{Type: graphql.NewNonNull(graphql.String)},
-		"created_at": &graphql.Field{Type: scalar.DateTime},
-		"updated_at": &graphql.Field{Type: scalar.DateTime},
 	},
 })

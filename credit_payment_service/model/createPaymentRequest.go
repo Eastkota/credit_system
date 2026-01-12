@@ -50,7 +50,7 @@ type Credits struct {
     UpdatedAt                   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
-func (CreatePaymentRequest) TableName() string {
+func (Credits) TableName() string {
     return "public.credits"
 }
 

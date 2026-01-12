@@ -1,12 +1,12 @@
-package schema
+package graph
 
 import (
-	"credit_system/auth_service/resolvers"
+	"credit_system/credit_payment_service/payment_resolvers"
 	
 	"github.com/graphql-go/graphql"
 )
 
-func PaymentMutations(resolver *resolvers.AuthResolver) graphql.Fields {
+func NewPaymentMutationType(resolver *resolvers.PaymentResolver) graphql.Fields {
 	return graphql.Fields{
 		"ownerApplyPayment": &graphql.Field{
 			Type: PaymentResponse,
@@ -16,10 +16,10 @@ func PaymentMutations(resolver *resolvers.AuthResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.OwnerApplyPayment(p)
-			}
+				return resolver.PaidAmount(p), nil
+			},
 		},
 
-	},
+	}
 }
 

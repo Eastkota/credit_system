@@ -1,11 +1,11 @@
-package schema
+package graph
 
 import (
 	"github.com/graphql-go/graphql"
 )
 
-var Service = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Service",
+var PaymentService = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PaymentService",
 	Fields: graphql.Fields{
 		"name":    &graphql.Field{Type: graphql.NewNonNull(graphql.String)},
 		"version": &graphql.Field{Type: graphql.NewNonNull(graphql.String)},

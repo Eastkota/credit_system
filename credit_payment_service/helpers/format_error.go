@@ -1,11 +1,11 @@
 package helpers
 
-import "credit_system/auth_service/model"
+import "credit_system/credit_payment_service/model"
 
-func FormatError(err error) *model.GenericAuthResponse {
-	return &model.GenericAuthResponse{
+func FormatError(err error) *model.GenericPaymentResponse {
+	return &model.GenericPaymentResponse{
 		Data: nil,
-		Error: &model.AuthError{
+		Error: &model.PaymentError{
 			Message: err.Error(),
 		},
 	}
