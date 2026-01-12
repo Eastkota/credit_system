@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"credit_system/customer_management/customer_services"
+	services "credit_system/customer_management/customer_services"
 	"credit_system/customer_management/helpers"
 	"credit_system/customer_management/model"
 	"encoding/json"
