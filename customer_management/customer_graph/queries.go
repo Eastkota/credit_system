@@ -9,10 +9,10 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-func NewCustomerQueryType(resolver *resolvers.CustomerResolver) graphql.Fields {
+func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 	return graphql.Fields{
-		"service": &graphql.Field{
-			Type: graphql.NewNonNull(Service),
+		"customerService": &graphql.Field{
+			Type: graphql.NewNonNull(schema.ServiceInfoType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				schema, err := schema.GetSchema()
 				if err != nil {
@@ -20,7 +20,7 @@ func NewCustomerQueryType(resolver *resolvers.CustomerResolver) graphql.Fields {
 				}
 
 				serviceInfo := model.Service{
-					Name:    "AuthService",
+					Name:    "CustomerService",
 					Version: "1.0.0",
 					Schema:  helpers.ConvertSchemaToString(schema),
 				}

@@ -6,7 +6,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-func NewCustomerMutationType(resolver *resolvers.CustomerResolver) graphql.Fields {
+func CustomerMutations(resolver *resolvers.CustomerResolver) graphql.Fields {
 	return graphql.Fields{
 		"registerCustomer": &graphql.Field{
 			Type: CustomerResponse,
