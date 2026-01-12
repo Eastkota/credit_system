@@ -1,41 +1,78 @@
 package schema
 
 import (
-	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/graphql-go/graphql"
 )
 
 var (
-	globalSchema *graphql.Schema
-	initErr      error
-	once         sync.Once
+	queryType     *graphql.Object
+	mutationType  *graphql.Object
+	schema        graphql.Schema
+	schemaErr     error
+	once          sync.Once
+	isInitialized bool
 )
 
-// InitSchema is called once in main.go after merging all module fields.
 func InitSchema(q *graphql.Object, m *graphql.Object) error {
+	var initErr error
+
 	once.Do(func() {
-		s, err := graphql.NewSchema(graphql.SchemaConfig{
-			Query:    q,
-			Mutation: m,
-		})
-		if err != nil {
-			initErr = err
+		if q == nil {
+			initErr = fmt.Errorf("query type cannot be nil")
+			schemaErr = initErr
 			return
 		}
-		globalSchema = &s
+
+		queryType = q
+		mutationType = m
+
+		config := graphql.SchemaConfig{
+			Query: queryType,
+		}
+
+		// Only add mutation if provided
+		if mutationType != nil {
+			config.Mutation = mutationType
+		}
+
+		schema, schemaErr = graphql.NewSchema(config)
+		if schemaErr != nil {
+			initErr = fmt.Errorf("failed to create schema: %w", schemaErr)
+			return
+		}
+
+		isInitialized = true
+		fmt.Println("✅ Schema initialized successfully")
 	})
-	return initErr
+
+	if initErr != nil {
+		return initErr
+	}
+
+	return schemaErr
 }
 
-// GetSchema provides the compiled schema to the handlers safely.
 func GetSchema() (*graphql.Schema, error) {
-	if globalSchema == nil {
-		if initErr != nil {
-			return nil, initErr
-		}
-		return nil, errors.New("schema has not been initialized")
+	if !isInitialized {
+		return nil, fmt.Errorf("schema not initialized - call InitSchema first")
 	}
-	return globalSchema, nil
+
+	if schemaErr != nil {
+		return nil, schemaErr
+	}
+
+	return &schema, nil
+}
+
+func IsInitialized() bool {
+	return isInitialized
+}
+
+func ResetSchema() {
+	once = sync.Once{}
+	isInitialized = false
+	schemaErr = nil
 }

@@ -6,7 +6,7 @@ var CustomerResponse = graphql.NewObject(graphql.ObjectConfig{
 	Name: "CustomerResponse",
 	Fields: graphql.Fields{
 		"data":  &graphql.Field{Type: CustomerResult},
-		"error": &graphql.Field{Type: AuthError},
+		"error": &graphql.Field{Type: CustomerError},
 	},
 })
 
