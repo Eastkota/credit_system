@@ -17,11 +17,8 @@ var CustomerInput = graphql.NewInputObject(
 			"phone_number": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
 			},
-			"email": &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			"credit_limit": &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			"has_credit": &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
 			},
 		},
 	},

@@ -2,9 +2,11 @@ package resolvers
 
 import (
 	"credit_system/customer_management/customer_services"
+	"credit_system/customer_management/helpers"
 	"credit_system/customer_management/model"
+	"encoding/json"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 )
 
@@ -17,23 +19,29 @@ func NewCustomerResolver(service services.Services) *CustomerResolver {
 }
 
 func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.GenericResponse {
-	input := model.CustomerInput{
-		StoreID:     p.Args["input"].(map[string]interface{})["store_id"].(uuid.UUID),
-		Name:        p.Args["input"].(map[string]interface{})["name"].(string),
-		PhoneNumber: p.Args["input"].(map[string]interface{})["phone_number"].(string),
-		Email:       p.Args["input"].(map[string]interface{})["email"].(string),
-		CreditLimit: p.Args["input"].(map[string]interface{})["credit_limit"].(float64),
-		IsActive:    true,
+
+	// input := model.CustomerInput{
+	// 	StoreID:     p.Args["store_id"].(uuid.UUID),
+	// 	Name:        p.Args["name"].(string),
+	// 	PhoneNumber: p.Args["phone_number"].(string),
+	// 	HasCredit:   p.Args["has_credit"].(bool),
+	// }
+	var customerInput model.CustomerInput
+	input := p.Args["input"].(map[string]interface{})
+
+	jsonData, err := json.Marshal(input)
+	if err != nil {
+		return helpers.FormatError(err)
 	}
 
-	customer, err := cr.Services.RegisterCustomer(p.Context, input)
+	err = json.Unmarshal(jsonData, &customerInput)
 	if err != nil {
-		return &model.GenericResponse{
-			Data: nil,
-			Error: &model.Error{
-				Message: err.Error(),
-			},
-		}
+		return helpers.FormatError(err)
+	}
+
+	customer, err := cr.Services.RegisterCustomer(p.Context, customerInput)
+	if err != nil {
+		return helpers.FormatError(err)
 	}
 	return &model.GenericResponse{
 		Data: &model.CustomerResult{

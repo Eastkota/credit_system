@@ -2,9 +2,10 @@ package main
 
 import (
 	"credit_system/auth_service/graph"
-	"credit_system/core/handlers"
 	"credit_system/auth_service/helpers"
+	"credit_system/core/handlers"
 	customer_graph "credit_system/customer_management/customer_graph"
+	"fmt"
 
 	"credit_system/auth_service/repositories"
 	"credit_system/auth_service/resolvers"
@@ -39,14 +40,16 @@ func main() {
 	authResolver := resolvers.NewAuthResolver(authService)
 
 	customerRepository := customer_repo.NewCustomerRepository(db)
+	fmt.Println("Customer repository initialized:", customerRepository)
 	customerService := customer_service.NewCustomerService(customerRepository)
 	customerResolver := customer_resolver.NewCustomerResolver(customerService)
+	fmt.Println("Customer resolver initialized:", customerResolver)
 
 	mutationType := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: schema.MergeFields(
 			graph.AuthMutations(authResolver),
-			customer_graph.NewCustomerMutationType(customerResolver),
+			customer_graph.CustomerMutations(customerResolver),
 			// graph.CreditMutations(creditResolver),
 		),
 	})
@@ -54,12 +57,13 @@ func main() {
 		Name: "Query",
 		Fields: schema.MergeFields(
 			graph.AuthQueries(authResolver),
-			// graph.UserQueries(userResolver),
+			customer_graph.CustomerQueries(customerResolver),
 			// graph.CreditQueries(creditResolver),
 		),
 	})
 
 	schema.InitSchema(queryType, mutationType)
+	fmt.Println("GraphQL schema initialized")
 	graph.InitMiddleware(authService)
 
 	e := echo.New()

@@ -10,8 +10,6 @@ var Customer = graphql.NewObject(graphql.ObjectConfig{
 		"store_id":     &graphql.Field{Type: graphql.String},
 		"name":         &graphql.Field{Type: graphql.String},
 		"phone_number": &graphql.Field{Type: graphql.String},
-		"email":        &graphql.Field{Type: graphql.String},
-		"credit_limit": &graphql.Field{Type: graphql.String},
-		"is_active":    &graphql.Field{Type: graphql.Boolean},
+		"has_credit":   &graphql.Field{Type: graphql.Boolean},
 	},
 })

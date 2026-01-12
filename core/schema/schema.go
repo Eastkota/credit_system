@@ -1,24 +1,41 @@
 package schema
 
 import (
-    "github.com/graphql-go/graphql"
+	"errors"
+	"sync"
+
+	"github.com/graphql-go/graphql"
 )
 
-var queryType *graphql.Object
-var mutationType *graphql.Object
+var (
+	globalSchema *graphql.Schema
+	initErr      error
+	once         sync.Once
+)
 
-var schema graphql.Schema
-var err error
-
-func InitSchema(q *graphql.Object, m *graphql.Object) {
-    queryType = q
-    mutationType = m
-    schema, err = graphql.NewSchema(graphql.SchemaConfig{
-        Query:    queryType,
-        Mutation: mutationType,
-    })
+// InitSchema is called once in main.go after merging all module fields.
+func InitSchema(q *graphql.Object, m *graphql.Object) error {
+	once.Do(func() {
+		s, err := graphql.NewSchema(graphql.SchemaConfig{
+			Query:    q,
+			Mutation: m,
+		})
+		if err != nil {
+			initErr = err
+			return
+		}
+		globalSchema = &s
+	})
+	return initErr
 }
 
+// GetSchema provides the compiled schema to the handlers safely.
 func GetSchema() (*graphql.Schema, error) {
-    return &schema, err
+	if globalSchema == nil {
+		if initErr != nil {
+			return nil, initErr
+		}
+		return nil, errors.New("schema has not been initialized")
+	}
+	return globalSchema, nil
 }

@@ -3,6 +3,7 @@ package handlers
 import (
 	"credit_system/auth_service/model"
 	"credit_system/core/schema"
+	"fmt"
 
 	"context"
 	"encoding/json"
@@ -37,6 +38,7 @@ func Handler(ctx echo.Context) error {
 	reqCtx := context.WithValue(ctx.Request().Context(), model.RequestKey, ctx.Request())
 
 	result := executeQuery(reqCtx, query, variables)
+	fmt.Println("Executed query:", query)
 	if result.HasErrors() {
 		return echo.NewHTTPError(http.StatusInternalServerError, result.Errors)
 	}
