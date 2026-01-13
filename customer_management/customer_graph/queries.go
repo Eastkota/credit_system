@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"credit_system/core/scalar"
 	"credit_system/core/schema"
 	resolvers "credit_system/customer_management/customer_resolvers"
 	"credit_system/customer_management/helpers"
@@ -25,6 +26,31 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 					Schema:  helpers.ConvertSchemaToString(schema),
 				}
 				return serviceInfo, nil
+			},
+		},
+		"FetchCustomerBalance": &graphql.Field{
+			Type: BalanceResponse,
+			Args: graphql.FieldConfigArgument{
+				"customer_id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(scalar.UUID),
+				},
+				"store_id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(scalar.UUID),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return resolver.FetchCustomerBalance(p), nil
+			},
+		},
+		"FetchAllCustomerBalance": &graphql.Field{
+			Type: MultipleBalanceResponse,
+			Args: graphql.FieldConfigArgument{
+				"store_id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(scalar.UUID),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return resolver.FetchAllCustomerBalance(p), nil
 			},
 		},
 	}

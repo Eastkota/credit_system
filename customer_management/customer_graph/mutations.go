@@ -19,5 +19,17 @@ func CustomerMutations(resolver *resolvers.CustomerResolver) graphql.Fields {
 				return resolver.RegisterCustomer(p), nil
 			},
 		},
+
+		"addCredit": &graphql.Field{
+			Type: CreditResponse,
+			Args: graphql.FieldConfigArgument{
+				"input": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(CreditInput),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return resolver.AddCredit(p), nil
+			},
+		},
 	}
 }

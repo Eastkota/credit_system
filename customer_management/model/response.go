@@ -13,3 +13,15 @@ type GenericResponse struct {
 type CustomerResult struct {
 	Customer *Customer `json:"customer"`
 }
+
+type CreditResult struct {
+	Credit *Credit `json:"credit"`
+}
+
+type BalanceResult struct {
+	Balance *BalanceUpdate `json:"balance"`
+}
+
+type MultipleBalanceResult struct {
+	Balances []BalanceUpdate `json:"balances"`
+}

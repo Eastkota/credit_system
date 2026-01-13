@@ -5,8 +5,9 @@ import (
 	"credit_system/customer_management/helpers"
 	"credit_system/customer_management/model"
 	"encoding/json"
+	"fmt"
 
-	// "github.com/google/uuid"
+	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 )
 
@@ -20,14 +21,11 @@ func NewCustomerResolver(service services.Services) *CustomerResolver {
 
 func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.GenericResponse {
 
-	// input := model.CustomerInput{
-	// 	StoreID:     p.Args["store_id"].(uuid.UUID),
-	// 	Name:        p.Args["name"].(string),
-	// 	PhoneNumber: p.Args["phone_number"].(string),
-	// 	HasCredit:   p.Args["has_credit"].(bool),
-	// }
 	var customerInput model.CustomerInput
-	input := p.Args["input"].(map[string]interface{})
+	input, ok := p.Args["input"].(map[string]interface{})
+	if !ok {
+		return helpers.FormatError(fmt.Errorf("Invalid input"))
+	}
 
 	jsonData, err := json.Marshal(input)
 	if err != nil {
@@ -51,16 +49,67 @@ func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.Gen
 	}
 }
 
-// func (cr *CustomerResolver) FetchStore(p graphql.ResolveParams) *model.GenericResponse {
-// 	storeID := p.Args["store_id"].(uuid.UUID)
-// 	result, err := cr.Services.FetchStore(storeID)
-// 	if err != nil {
-// 		return helpers.FormatError(err)
-// 	}
-// 	return &model.GenericAuthResponse{
-// 		Data: &model.StoreResult{
-// 			Store: result,
-// 		},
-// 		Error: nil,
-// 	}
-// }
+func (cr *CustomerResolver) AddCredit(p graphql.ResolveParams) *model.GenericResponse {
+
+	var creditInput model.CreditInput
+	input, ok := p.Args["input"].(map[string]interface{})
+	if !ok {
+		return helpers.FormatError(fmt.Errorf("Invalid input"))
+	}
+
+	jsonData, err := json.Marshal(input)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	err = json.Unmarshal(jsonData, &creditInput)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	credit, err := cr.Services.AddCredit(p.Context, creditInput)
+	fmt.Printf("Credit returned from service: %+v\n", credit)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	fmt.Printf("Credit returned from service: %+v\n", credit)
+
+	return &model.GenericResponse{
+		Data: &model.CreditResult{
+			Credit: credit,
+		},
+		Error: nil,
+	}
+}
+
+func (r *CustomerResolver) FetchCustomerBalance(p graphql.ResolveParams) *model.GenericResponse {
+	customerId := p.Args["customer_id"].(uuid.UUID)
+	storeId := p.Args["store_id"].(uuid.UUID)
+	result, err := r.Services.FetchCustomerBalance(customerId, storeId)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericResponse{
+		Data: &model.BalanceResult{
+			Balance: result,
+		},
+		Error: nil,
+	}
+}
+
+func (r *CustomerResolver) FetchAllCustomerBalance(p graphql.ResolveParams) *model.GenericResponse {
+	storeId := p.Args["store_id"].(uuid.UUID)
+	result, err := r.Services.FetchAllCustomerBalance(p.Context, storeId)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericResponse{
+		Data: &model.MultipleBalanceResult{
+			Balances: result,
+		},
+		Error: nil,
+	}
+}
