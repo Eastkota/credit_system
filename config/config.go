@@ -24,6 +24,3 @@ const (
 
 func ClientId() string       { return os.Getenv("CLIENT_ID") }
 func ClientSecret() string   { return os.Getenv("CLIENT_SECRET") }
-func RabbitMQURL() string    { return os.Getenv("RABBITMQ_URL") }
-func UserServiceApi() string { return os.Getenv("USER_SERVICE_API") }
-func MembershipApi() string  { return os.Getenv("MEMBERSHIP_API") }

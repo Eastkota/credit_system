@@ -45,7 +45,6 @@ func InitSchema(q *graphql.Object, m *graphql.Object) error {
 		}
 
 		isInitialized = true
-		fmt.Println("✅ Schema initialized successfully")
 	})
 
 	if initErr != nil {

@@ -9,9 +9,6 @@ var SignupInput = graphql.NewInputObject(
 	graphql.InputObjectConfig{
 		Name: "SignupInput",
 		Fields: graphql.InputObjectConfigFieldMap{
-			"email": &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
 			"phone_number": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
@@ -27,7 +24,7 @@ var SignupInput = graphql.NewInputObject(
 			"store_name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
-			"address": &graphql.InputObjectFieldConfig{
+			"account_number": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
 		},
