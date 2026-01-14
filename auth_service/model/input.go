@@ -11,7 +11,7 @@ type SignupInput struct {
     Status     string `json:"status"`
     PhoneNumber string `json:"phone_number"`
     StoreName  string `json:"store_name"`
-    Address    string `json:"address"`
+    AccountNumber string `json:"account_number"`
 }
 
 type UpdatePasswordInput struct {

@@ -77,15 +77,7 @@ func main() {
 	})
 
 	// Initialize schema with error handling
-	if err := schema.InitSchema(queryType, mutationType); err != nil {
-		log.Fatalf("Failed to initialize GraphQL schema: %v", err)
-	}
-
-	// Verify schema is initialized
-	if !schema.IsInitialized() {
-		log.Fatal("Schema initialization failed - schema not ready")
-	}
-
+	schema.InitSchema(queryType, mutationType)
 	graph.InitMiddleware(authService)
 
 	startServer()
@@ -110,13 +102,6 @@ func startServer() {
 
 	// GraphQL endpoint
 	e.POST("/graphql", handlers.Handler)
-
-	// e.GET("/health", func(c echo.Context) error {
-	// 	return c.JSON(200, map[string]string{
-	// 		"status": "healthy",
-	// 		"schema": fmt.Sprintf("initialized: %v", schema.IsInitialized()),
-	// 	})
-	// })
 
 	e.Logger.Fatal(e.Start(":8090"))
 }

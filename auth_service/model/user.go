@@ -13,6 +13,7 @@ type StoreOwner struct {
     Password    string    `gorm:"type:varchar" json:"password"`
     Status      string    `gorm:"type:varchar" json:"status"`
     PhoneNumber string    `gorm:"type:varchar" json:"phone_number"`
+    AccountNumber string    `gorm:"type:varchar" json:"account_number"`
     CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
     UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -25,7 +26,6 @@ type Store struct {
     ID          uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
     Name        string    `gorm:"type:varchar" json:"name"`
     OwnerID     uuid.UUID `gorm:"type:uuid" json:"owner_id"`
-    Address     string    `gorm:"type:varchar" json:"address"`
     CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
     UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
