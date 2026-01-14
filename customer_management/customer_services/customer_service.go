@@ -29,3 +29,9 @@ func (cs *CustomerService) FetchCustomerBalance(customer_id, store_id uuid.UUID)
 func (cs *CustomerService) FetchAllCustomerBalance(ctx context.Context, store_id uuid.UUID) ([]model.BalanceUpdate, error) {
 	return cs.Repository.FetchAllCustomerBalance(ctx, store_id)
 }
+func (cs *CustomerService) FetchAllCustomerByStoreId(ctx context.Context, store_id uuid.UUID) ([]model.Customer, error) {
+	return cs.Repository.FetchAllCustomerByStoreId(ctx, store_id)
+}
+func (cs *CustomerService) FetchCustomerById(ctx context.Context, customer_id uuid.UUID) (*model.Customer, error) {
+	return cs.Repository.FetchCustomerById(ctx, customer_id)
+}

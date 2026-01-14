@@ -54,10 +54,24 @@ var MultipleBalanceResponse = graphql.NewObject(graphql.ObjectConfig{
 		"error": &graphql.Field{Type: CustomerError},
 	},
 })
+var MultipleCustomerResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "MultipleCustomerResponse",
+	Fields: graphql.Fields{
+		"data":  &graphql.Field{Type: MultipleCustomerResult},
+		"error": &graphql.Field{Type: CustomerError},
+	},
+})
 
 var MultipleBalanceResult = graphql.NewObject(graphql.ObjectConfig{
 	Name: "MultipleBalanceResult",
 	Fields: graphql.Fields{
 		"balances": &graphql.Field{Type: graphql.NewList(BalanceUpdate)},
+	},
+})
+
+var MultipleCustomerResult = graphql.NewObject(graphql.ObjectConfig{
+	Name: "MultipleCustomerResult",
+	Fields: graphql.Fields{
+		"customers": &graphql.Field{Type: graphql.NewList(Customer)},
 	},
 })

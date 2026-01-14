@@ -137,3 +137,28 @@ func (repo *CustomerRepository) FetchAllCustomerBalance(ctx context.Context, sto
 
 	return results, nil
 }
+
+func (repo *CustomerRepository) FetchAllCustomerByStoreId(ctx context.Context, store_id uuid.UUID) ([]model.Customer, error) {
+	var results []model.Customer
+	result := repo.DB.WithContext(ctx).
+		Where("store_id = ?", store_id).
+		Find(&results)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to get customer balances: %v", result.Error)
+	}
+
+	return results, nil
+}
+func (repo *CustomerRepository) FetchCustomerById(ctx context.Context, customer_id uuid.UUID) (*model.Customer, error) {
+	var customer model.Customer
+	result := repo.DB.WithContext(ctx).
+		Where("id = ?", customer_id).
+		Find(&customer)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to get customer balances: %v", result.Error)
+	}
+
+	return &customer, nil
+}

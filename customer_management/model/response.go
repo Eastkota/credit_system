@@ -25,3 +25,6 @@ type BalanceResult struct {
 type MultipleBalanceResult struct {
 	Balances []BalanceUpdate `json:"balances"`
 }
+type MultipleCustomerResult struct {
+	Customers []Customer `json:"customers"`
+}

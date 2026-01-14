@@ -53,5 +53,28 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 				return resolver.FetchAllCustomerBalance(p), nil
 			},
 		},
+		"FetchAllCustomerByStoreId": &graphql.Field{
+			Type: MultipleCustomerResponse,
+			Args: graphql.FieldConfigArgument{
+				"store_id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(scalar.UUID),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return resolver.FetchAllCustomersByStoreId(p), nil
+			},
+		},
+
+		"FetchCustomerById": &graphql.Field{
+			Type: CustomerResponse,
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(scalar.UUID),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return resolver.FetchCustomerById(p), nil
+			},
+		},
 	}
 }

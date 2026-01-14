@@ -113,3 +113,32 @@ func (r *CustomerResolver) FetchAllCustomerBalance(p graphql.ResolveParams) *mod
 		Error: nil,
 	}
 }
+func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *model.GenericResponse {
+	storeId := p.Args["store_id"].(uuid.UUID)
+	result, err := r.Services.FetchAllCustomerByStoreId(p.Context, storeId)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericResponse{
+		Data: &model.MultipleCustomerResult{
+			Customers: result,
+		},
+		Error: nil,
+	}
+}
+
+func (r *CustomerResolver) FetchCustomerById(p graphql.ResolveParams) *model.GenericResponse {
+	customerId := p.Args["id"].(uuid.UUID)
+	result, err := r.Services.FetchCustomerById(p.Context, customerId)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericResponse{
+		Data: &model.CustomerResult{
+			Customer: result,
+		},
+		Error: nil,
+	}
+}
