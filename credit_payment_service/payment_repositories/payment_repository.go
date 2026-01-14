@@ -1,44 +1,44 @@
 package repositories
 
 import (
-    "credit_system/credit_payment_service/model"
+	"credit_system/credit_payment_service/model"
+	"fmt"
 
-    "time"
+	"time"
 
-    "github.com/google/uuid"
-    "gorm.io/gorm"
-    "context"
+	"context"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-type paymentRepository struct {
-    DB *gorm.DB
+type PaymentSubmissionRepository struct {
+	DB *gorm.DB
 }
 
-func NewPaymentRepository(db *gorm.DB) *paymentRepository {
-    return &paymentRepository{DB: db}
+func NewPaymentSubmissionRepository(db *gorm.DB) *PaymentSubmissionRepository {
+	return &PaymentSubmissionRepository{DB: db}
 }
 
-func (pr *paymentRepository) OwnerApplyPayment(ctx context.Context, input model.CreatePaymentInput ) (paymentRequest *model.CreatePaymentRequest, err error) {
-    var payment model.CreatePaymentRequest
+func (pr *PaymentSubmissionRepository) OwnerApplyPayment(ctx context.Context, input model.CreatePaymentInput) (*model.PaymentSubmission, error) {
 
-    payment.ID = uuid.New()
-    payment.CustomerID = input.CustomerID
-    payment.StoreID = input.StoreID
-    payment.Amount = input.Amount
-    payment.JournalNumber = input.JournalNumber
-    payment.Status = "Pending"
-    payment.CreatedAt = time.Now()
-    payment.UpdatedAt = time.Now()
+	payment := model.PaymentSubmission{
+		ID:                 uuid.New(),
+		CustomerID:         input.CustomerID,
+		StoreID:            input.StoreID,
+		ValidatedByOwnerId: input.ValidatedByOwnerId,
+		LinkedCreditID:     input.LinkedCreditID,
 
-    result := pr.DB.WithContext(ctx).Create(&payment)
-    if result.Error != nil {
-        return nil, result.Error
-    }
+		Amount:      input.Amount,
+		Status:      input.Status,
+		ValidatedAt: time.Now(),
 
-    return &payment, nil
-    
+		SubmittedAt: time.Now(),
+		CreatedAt:   time.Now(),
+		ModifiedAt:  time.Now(),
+	}
+	if err := pr.DB.WithContext(ctx).Create(payment).Error; err != nil {
+		return nil, fmt.Errorf("failed to create payment submission: %w", err)
+	}
+	return &payment, nil
 }
-
-
-
-

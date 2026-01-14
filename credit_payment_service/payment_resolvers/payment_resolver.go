@@ -3,8 +3,7 @@ package resolvers
 import (
 	"credit_system/credit_payment_service/helpers"
 	"credit_system/credit_payment_service/model"
-	"credit_system/credit_payment_service/payment_services"
-
+	services "credit_system/credit_payment_service/payment_services"
 	"encoding/json"
 	"fmt"
 
@@ -20,33 +19,31 @@ func NewPaymentResolver(service services.Services) *PaymentResolver {
 }
 
 func (pr *PaymentResolver) PaidAmount(p graphql.ResolveParams) *model.GenericPaymentResponse {
-	// If you use input object:
+	var paymentInput model.CreatePaymentInput
+
 	input, ok := p.Args["input"].(map[string]interface{})
 	if !ok {
-		return helpers.FormatError(fmt.Errorf("invalid input"))
+		return helpers.FormatError(fmt.Errorf("Invalid Input"))
+	}
+	jsonData, err := json.Marshal(input)
+	if err != nil {
+		return helpers.FormatError(fmt.Errorf("Failed to parse input: %w", err))
+	}
+	err = json.Unmarshal(jsonData, &paymentInput)
+	if err != nil {
+		return helpers.FormatError(fmt.Errorf("Failed to parse input data: %w", err))
 	}
 
-	inputBytes, err := json.Marshal(input)
+	paymentSubmission, err := pr.Services.OwnerApplyPayment(p.Context, paymentInput)
+	fmt.Println("Payment Submission:", paymentSubmission)
 	if err != nil {
-		return helpers.FormatError(err)
-	}
-
-	var paidAmountInput model.CreatePaymentInput
-	err = json.Unmarshal(inputBytes, &paidAmountInput)
-	if err != nil {
-		return helpers.FormatError(err)
-	}
-
-	paymentRequest, err := pr.Services.OwnerApplyPayment(p.Context, paidAmountInput)
-	if err != nil {
-		return helpers.FormatError(err)
+		return helpers.FormatError(fmt.Errorf("Failed to apply payment: %w", err))
 	}
 
 	return &model.GenericPaymentResponse{
-		Data: &model.PaymentSuccessData{
-			Payment: paymentRequest,
+		Data: &model.PaymentSubmissionResponse{
+			PaymentSubmission: *paymentSubmission,
 		},
 		Error: nil,
 	}
-
 }

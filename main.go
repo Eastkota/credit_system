@@ -4,8 +4,8 @@ import (
 	"credit_system/auth_service/graph"
 	"credit_system/auth_service/helpers"
 	"credit_system/core/handlers"
-	customer_graph "credit_system/customer_management/customer_graph"
 	payment_graph "credit_system/credit_payment_service/payment_graph"
+	customer_graph "credit_system/customer_management/customer_graph"
 	"log"
 
 	"credit_system/auth_service/repositories"
@@ -16,7 +16,7 @@ import (
 	customer_repo "credit_system/customer_management/customer_repositories"
 	customer_resolver "credit_system/customer_management/customer_resolvers"
 	customer_service "credit_system/customer_management/customer_services"
-	
+
 	payment_repo "credit_system/credit_payment_service/payment_repositories"
 	payment_resolver "credit_system/credit_payment_service/payment_resolvers"
 	payment_service "credit_system/credit_payment_service/payment_services"
@@ -49,7 +49,7 @@ func main() {
 	customerResolver := customer_resolver.NewCustomerResolver(customerService)
 
 	// Initialize Payment Module
-	paymentRepository := payment_repo.NewPaymentRepository(db)
+	paymentRepository := payment_repo.NewPaymentSubmissionRepository(db)
 	paymentService := payment_service.NewPaymentService(paymentRepository)
 	paymentResolver := payment_resolver.NewPaymentResolver(paymentService)
 

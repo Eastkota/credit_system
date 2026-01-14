@@ -2,31 +2,19 @@ package services
 
 import (
 	"credit_system/credit_payment_service/model"
-	"credit_system/credit_payment_service/payment_repositories"
+	repositories "credit_system/credit_payment_service/payment_repositories"
 
-	"fmt"
-    "context"
-)
-
-var (
-    ErrInvalidInput     = fmt.Errorf("invalid_input")
-    ErrOverPayment      = fmt.Errorf("over_payment")
-    ErrBalanceNotFound  = fmt.Errorf("balance_not_found")
+	"context"
 )
 
 type PaymentService struct {
-	Repository repositories.PaymentRepository 
+	Repository repositories.PaymentRepository
 }
 
 func NewPaymentService(repository repositories.PaymentRepository) *PaymentService {
 	return &PaymentService{Repository: repository}
 }
 
-func (as *PaymentService) OwnerApplyPayment(ctx context.Context, input model.CreatePaymentInput)(model.CreatePaymentRequest, error) {
-    paymentRequest, err := as.Repository.OwnerApplyPayment(ctx, input)
-    if err != nil {
-        return model.CreatePaymentRequest{}, err
-    }
-
-    return *paymentRequest, nil
+func (as *PaymentService) OwnerApplyPayment(ctx context.Context, input model.CreatePaymentInput) (*model.PaymentSubmission, error) {
+	return as.Repository.OwnerApplyPayment(ctx, input)
 }

@@ -5,12 +5,13 @@ import "github.com/graphql-go/graphql"
 var PaymentResponse = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PaymentResponse",
 	Fields: graphql.Fields{
-		"credit_id": &graphql.Field{Type: graphql.NewNonNull(graphql.String)},
+		"data":    &graphql.Field{Type: PaymentResult},
 		"message": &graphql.Field{Type: graphql.String},
 	},
 })
-
-
-
-
-
+var PaymentResult = graphql.NewObject(graphql.ObjectConfig{
+	Name: "PaymentResult",
+	Fields: graphql.Fields{
+		"create_payment_request": &graphql.Field{Type: CreatePaymentRequest},
+	},
+})
