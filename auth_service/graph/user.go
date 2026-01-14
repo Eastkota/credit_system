@@ -14,6 +14,7 @@ var StoreOwner = graphql.NewObject(graphql.ObjectConfig{
 		"name":                       &graphql.Field{Type: graphql.String},
 		"phone_number":               &graphql.Field{Type: graphql.String},
 		"password":                   &graphql.Field{Type: graphql.String},
+		"account_number":             &graphql.Field{Type: graphql.String},
 		"status":                     &graphql.Field{Type: graphql.String},
 		"created_at":                 &graphql.Field{Type: scalar.Time},
 		"updated_at":                 &graphql.Field{Type: scalar.Time},
@@ -27,7 +28,6 @@ var Store = graphql.NewObject(graphql.ObjectConfig{
 		"id": &graphql.Field{Type: scalar.UUID},
 		"name": &graphql.Field{Type: graphql.String},
 		"owner_id": &graphql.Field{Type: scalar.UUID},
-		"address": &graphql.Field{Type: graphql.String},
 		"created_at": &graphql.Field{Type: scalar.Time},
 		"updated_at": &graphql.Field{Type: scalar.Time},
 

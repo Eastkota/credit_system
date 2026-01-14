@@ -26,7 +26,7 @@ func (repo *AuthRepository) CheckForExistingUser(field, value string) (*model.St
     return &store_owner, nil
 }
 
-func (repo *AuthRepository) FetchUser(field, value string) (*model.StoreOwner, error) {
+func (repo *AuthRepository) FetchOwner(field, value string) (*model.StoreOwner, error) {
     var store_owner model.StoreOwner
     err := repo.DB.Where(fmt.Sprintf("%s = ?", field), value).First(&store_owner).Error
     if err != nil {
@@ -45,6 +45,12 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
         return nil, nil, nil, fmt.Errorf("user already exists with provided credentials")
     }
 
+    var existingAccount model.StoreOwner
+    err = repo.DB.Where("account_number = ?", signupInput.AccountNumber).First(&existingAccount).Error
+    if err == nil {
+        return nil, nil, nil, fmt.Errorf("user already exists with provided account number")
+    }
+
     hashedPassword, err := helpers.EncryptPassword(signupInput.Password)
     if err != nil {
         return nil, nil, nil, fmt.Errorf("failed to hash password: %v", err)
@@ -58,6 +64,7 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
             PhoneNumber: signupInput.PhoneNumber,
             Password:    hashedPassword,
             Status:      "Active",
+            AccountNumber: signupInput.AccountNumber,
         }
 
         if err := tx.Create(&storeOwner).Error; err != nil {
@@ -68,7 +75,6 @@ func (repo *AuthRepository) RegisterUser(signupInput *model.SignupInput) (*model
             ID:          uuid.New(),
             Name:        signupInput.StoreName,
             OwnerID:     storeOwner.ID,
-            Address:     signupInput.Address,
         }
 
         if err := tx.Create(&storeResult).Error; err != nil {
@@ -112,7 +118,7 @@ func (repo *AuthRepository) Login(PhoneNumber, password string) (*model.StoreOwn
     var owner *model.StoreOwner
     var store *model.Store
     
-    owner, err := repo.FetchUser("phone_number", PhoneNumber)
+    owner, err := repo.FetchOwner("phone_number", PhoneNumber)
     if err != nil {
         return nil, nil, nil, err
     }

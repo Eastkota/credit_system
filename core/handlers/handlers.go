@@ -4,13 +4,12 @@ import (
 	"credit_system/auth_service/model"
 	"credit_system/core/schema"
 
-
 	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
-	"github.com/labstack/echo/v4" 
+	"github.com/labstack/echo/v4"
 )
 
 func Handler(ctx echo.Context) error {

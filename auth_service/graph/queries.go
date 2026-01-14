@@ -15,7 +15,7 @@ import (
 func AuthQueries(resolver *resolvers.AuthResolver) graphql.Fields {
 	return graphql.Fields{
 		"service": &graphql.Field{
-			Type: graphql.NewNonNull(Service),
+			Type: graphql.NewNonNull(schema.ServiceInfoType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				s, err := schema.GetSchema()
 				if err != nil {
