@@ -103,5 +103,7 @@ func startServer() {
 	// GraphQL endpoint
 	e.POST("/graphql", handlers.Handler)
 
+	e.POST("/upload_screenshot", handlers.SaveImageToLocal)
+
 	e.Logger.Fatal(e.Start(":8090"))
 }
