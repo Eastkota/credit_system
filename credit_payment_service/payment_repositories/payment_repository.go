@@ -42,3 +42,20 @@ func (pr *PaymentSubmissionRepository) OwnerApplyPayment(ctx context.Context, in
 	}
 	return &payment, nil
 }
+
+func (repo *PaymentSubmissionRepository) OwnerPayment(ctx context.Context, screenshot_url, status string, storeId uuid.UUID) (*model.OwnerPaymentDetails, error) {
+	payment := &model.OwnerPaymentDetails{
+		Id:            uuid.New(),
+		StoreId:       storeId,
+		ScreenshotURL: screenshot_url,
+		Status:        status,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+	}
+
+	if err := repo.DB.WithContext(ctx).Create(payment).Error; err != nil {
+		return nil, fmt.Errorf("failed to create payment: %v", err)
+	}
+
+	return payment, nil
+}

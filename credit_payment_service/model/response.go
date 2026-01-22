@@ -8,3 +8,7 @@ type GenericPaymentResponse struct {
 type PaymentSubmissionResponse struct {
 	PaymentSubmission PaymentSubmission `json:"create_payment_request"`
 }
+
+type OwnerPaymentSubmissionResponse struct {
+	OwnerPaymentSubmission OwnerPaymentDetails `json:"submit_payment_request"`
+}

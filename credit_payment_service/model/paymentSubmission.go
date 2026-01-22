@@ -36,3 +36,16 @@ type CustomerBalance struct {
 func (CustomerBalance) TableName() string {
 	return "public.customer_balances"
 }
+
+type OwnerPaymentDetails struct {
+	Id            uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	StoreId       uuid.UUID `gorm:"type:uuid;primaryKey" json:"store_id"`
+	ScreenshotURL string    `gorm:"type:varchar" json:"screenshot_url"`
+	Status        string    `gorm:"type:varchar" json:"status"`
+	CreatedAt     time.Time `gorm:"timestamptz" json:"created_at"`
+	UpdatedAt     time.Time `gorm:"timestamptz" json:"updated_at"`
+}
+
+func (OwnerPaymentDetails) TableName() string {
+	return "public.owner_payment_submit"
+}

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 )
 
@@ -43,6 +44,23 @@ func (pr *PaymentResolver) PaidAmount(p graphql.ResolveParams) *model.GenericPay
 	return &model.GenericPaymentResponse{
 		Data: &model.PaymentSubmissionResponse{
 			PaymentSubmission: *paymentSubmission,
+		},
+		Error: nil,
+	}
+}
+
+func (r *PaymentResolver) SubmitOwnerPayment(p graphql.ResolveParams) *model.GenericPaymentResponse {
+	storeId := p.Args["store_id"].(uuid.UUID)
+	screenshot_url := p.Args["screenshot_url"].(string)
+	status := p.Args["status"].(string)
+	result, err := r.Services.OwnerPayment(p.Context, screenshot_url, status, storeId)
+	if err != nil {
+		return helpers.FormatError(err)
+	}
+
+	return &model.GenericPaymentResponse{
+		Data: &model.OwnerPaymentSubmissionResponse{
+			OwnerPaymentSubmission: *result,
 		},
 		Error: nil,
 	}

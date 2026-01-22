@@ -9,9 +9,22 @@ var PaymentResponse = graphql.NewObject(graphql.ObjectConfig{
 		"message": &graphql.Field{Type: graphql.String},
 	},
 })
+var OwnerPaymentResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "OwnerPaymentResponse",
+	Fields: graphql.Fields{
+		"data":  &graphql.Field{Type: OwnerPaymentResult},
+		"error": &graphql.Field{Type: graphql.String},
+	},
+})
 var PaymentResult = graphql.NewObject(graphql.ObjectConfig{
 	Name: "PaymentResult",
 	Fields: graphql.Fields{
 		"create_payment_request": &graphql.Field{Type: CreatePaymentRequest},
+	},
+})
+var OwnerPaymentResult = graphql.NewObject(graphql.ObjectConfig{
+	Name: "OwnerPaymentResult",
+	Fields: graphql.Fields{
+		"submit_payment_request": &graphql.Field{Type: OwnerPaymentRequest},
 	},
 })
