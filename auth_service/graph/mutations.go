@@ -2,7 +2,9 @@ package graph
 
 import (
 	"credit_system/auth_service/resolvers"
-	
+    "credit_system/core/schema"
+    "credit_system/auth_service/model"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -19,7 +21,7 @@ func AuthMutations(resolver *resolvers.AuthResolver) graphql.Fields {
                 },
             },
             Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-                return PublicAuthMiddleware(resolver.Login)(p), nil
+                return schema.PublicAuthMiddleware(resolver.Login)(p), nil
             },
         },
 
@@ -61,7 +63,7 @@ func AuthMutations(resolver *resolvers.AuthResolver) graphql.Fields {
                 },
             },
             Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-                return AuthMiddleware(resolver.UpdateSingleDataByID)(p), nil
+                return schema.AuthMiddleware[model.GenericAuthResponse](resolver.UpdateSingleDataByID)(p), nil
             },
         },
     }

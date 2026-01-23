@@ -1,9 +1,10 @@
-package graph
+package schema
 
 import (
     "credit_system/auth_service/helpers"
     "credit_system/auth_service/model"
     "credit_system/auth_service/services"
+    "credit_system/core/generic_response"
 
     "fmt"
     "context"
@@ -21,35 +22,26 @@ func InitMiddleware(as *services.AuthService) {
     authService = as
 }
 
-func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericAuthResponse) func(p graphql.ResolveParams) *model.GenericAuthResponse {
-    return func(p graphql.ResolveParams) *model.GenericAuthResponse {
+func AuthMiddleware[T any](next func(p graphql.ResolveParams) *T) func(p graphql.ResolveParams) *T {
+    return func(p graphql.ResolveParams) *T {
         ctx := p.Context
         userInterface := ctx.Value(model.UserKey)
 
-        var owner *model.StoreOwner
         if userInterface == nil {
             if req, ok := ctx.Value(model.RequestKey).(*http.Request); ok {
                 authHeader := req.Header.Get("Authorization")
                 u, err := authService.ValidateToken(authHeader)
+                
                 if err != nil {
-                    return helpers.FormatError(err)
-                }
-                if u == nil {
-                    return helpers.FormatError(fmt.Errorf("invalid_token"))
+                    // This will now return the correct struct type automatically
+                    return generic_response.FormatMiddlewareError[T](err)
                 }
 
                 ctx = context.WithValue(ctx, model.UserKey, u)
                 p.Context = ctx
-                owner = u
             } else {
-                return helpers.FormatError(fmt.Errorf("invalid_token"))
+                return generic_response.FormatMiddlewareError[T](fmt.Errorf("invalid_request_context"))
             }
-        } else {
-            owner, _ = userInterface.(*model.StoreOwner)
-        }
-
-        if owner == nil {
-            return helpers.FormatError(fmt.Errorf("invalid_token"))
         }
 
         return next(p)

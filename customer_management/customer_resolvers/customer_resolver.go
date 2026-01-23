@@ -19,7 +19,7 @@ func NewCustomerResolver(service services.Services) *CustomerResolver {
 	return &CustomerResolver{Services: service}
 }
 
-func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.GenericResponse {
+func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.GenericCustomerResponse {
 
 	var customerInput model.CustomerInput
 	input, ok := p.Args["input"].(map[string]interface{})
@@ -41,7 +41,7 @@ func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.Gen
 	if err != nil {
 		return helpers.FormatError(err)
 	}
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.CustomerResult{
 			Customer: customer,
 		},
@@ -49,7 +49,7 @@ func (cr *CustomerResolver) RegisterCustomer(p graphql.ResolveParams) *model.Gen
 	}
 }
 
-func (cr *CustomerResolver) AddCredit(p graphql.ResolveParams) *model.GenericResponse {
+func (cr *CustomerResolver) AddCredit(p graphql.ResolveParams) *model.GenericCustomerResponse {
 
 	var creditInput model.CreditInput
 	input, ok := p.Args["input"].(map[string]interface{})
@@ -75,7 +75,7 @@ func (cr *CustomerResolver) AddCredit(p graphql.ResolveParams) *model.GenericRes
 
 	fmt.Printf("Credit returned from service: %+v\n", credit)
 
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.CreditResult{
 			Credit: credit,
 		},
@@ -83,7 +83,7 @@ func (cr *CustomerResolver) AddCredit(p graphql.ResolveParams) *model.GenericRes
 	}
 }
 
-func (r *CustomerResolver) FetchCustomerBalance(p graphql.ResolveParams) *model.GenericResponse {
+func (r *CustomerResolver) FetchCustomerBalance(p graphql.ResolveParams) *model.GenericCustomerResponse {
 	customerId := p.Args["customer_id"].(uuid.UUID)
 	storeId := p.Args["store_id"].(uuid.UUID)
 	result, err := r.Services.FetchCustomerBalance(customerId, storeId)
@@ -91,7 +91,7 @@ func (r *CustomerResolver) FetchCustomerBalance(p graphql.ResolveParams) *model.
 		return helpers.FormatError(err)
 	}
 
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.BalanceResult{
 			Balance: result,
 		},
@@ -99,28 +99,28 @@ func (r *CustomerResolver) FetchCustomerBalance(p graphql.ResolveParams) *model.
 	}
 }
 
-func (r *CustomerResolver) FetchAllCustomerBalance(p graphql.ResolveParams) *model.GenericResponse {
+func (r *CustomerResolver) FetchAllCustomerBalance(p graphql.ResolveParams) *model.GenericCustomerResponse {
 	storeId := p.Args["store_id"].(uuid.UUID)
 	result, err := r.Services.FetchAllCustomerBalance(p.Context, storeId)
 	if err != nil {
 		return helpers.FormatError(err)
 	}
 
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.MultipleBalanceResult{
 			Balances: result,
 		},
 		Error: nil,
 	}
 }
-func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *model.GenericResponse {
+func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *model.GenericCustomerResponse {
 	storeId := p.Args["store_id"].(uuid.UUID)
 	result, err := r.Services.FetchAllCustomerByStoreId(p.Context, storeId)
 	if err != nil {
 		return helpers.FormatError(err)
 	}
 
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.MultipleCustomerResult{
 			Customers: result,
 		},
@@ -128,14 +128,14 @@ func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *
 	}
 }
 
-func (r *CustomerResolver) FetchCustomerById(p graphql.ResolveParams) *model.GenericResponse {
+func (r *CustomerResolver) FetchCustomerById(p graphql.ResolveParams) *model.GenericCustomerResponse {
 	customerId := p.Args["id"].(uuid.UUID)
 	result, err := r.Services.FetchCustomerById(p.Context, customerId)
 	if err != nil {
 		return helpers.FormatError(err)
 	}
 
-	return &model.GenericResponse{
+	return &model.GenericCustomerResponse{
 		Data: &model.CustomerResult{
 			Customer: result,
 		},

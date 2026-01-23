@@ -61,7 +61,7 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.FetchAllCustomersByStoreId(p), nil
+				return schema.AuthMiddleware[model.GenericCustomerResponse](resolver.FetchAllCustomersByStoreId)(p), nil
 			},
 		},
 
