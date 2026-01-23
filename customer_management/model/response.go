@@ -5,7 +5,7 @@ type GenericSuccessData struct {
 	Code    string `json:"code"`
 }
 
-type GenericResponse struct {
+type GenericCustomerResponse struct {
 	Data  interface{} `json:"data,omitempty"`
 	Error *Error      `json:"error,omitempty"`
 }

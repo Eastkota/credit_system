@@ -78,7 +78,7 @@ func main() {
 
 	// Initialize schema with error handling
 	schema.InitSchema(queryType, mutationType)
-	graph.InitMiddleware(authService)
+	schema.InitMiddleware(authService)
 
 	startServer()
 }
@@ -89,8 +89,9 @@ func startServer() {
 	// CORS middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
-			"http://localhost:3000",
-			"http://10.10.8.203:3000",
+			// "http://localhost:8081",
+			// "http://10.10.9.197:8081",
+			"*",
 		},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
 		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization"},
