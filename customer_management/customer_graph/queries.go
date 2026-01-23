@@ -39,7 +39,8 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.FetchCustomerBalance(p), nil
+
+				return schema.AuthMiddleware[model.GenericCustomerResponse](resolver.FetchCustomerBalance)(p), nil
 			},
 		},
 		"FetchAllCustomerBalance": &graphql.Field{
@@ -50,7 +51,7 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.FetchAllCustomerBalance(p), nil
+				return schema.AuthMiddleware[model.GenericCustomerResponse](resolver.FetchAllCustomerBalance)(p), nil
 			},
 		},
 		"FetchAllCustomerByStoreId": &graphql.Field{
@@ -73,7 +74,7 @@ func CustomerQueries(resolver *resolvers.CustomerResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.FetchCustomerById(p), nil
+				return schema.AuthMiddleware[model.GenericCustomerResponse](resolver.FetchCustomerById)(p), nil
 			},
 		},
 	}

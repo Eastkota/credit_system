@@ -1,6 +1,8 @@
 package graph
 
 import (
+	"credit_system/core/scalar"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -9,7 +11,7 @@ var CustomerInput = graphql.NewInputObject(
 		Name: "CustomerInput",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"store_id": &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+				Type: graphql.NewNonNull(scalar.UUID),
 			},
 			"name": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
@@ -26,10 +28,10 @@ var CreditInput = graphql.NewInputObject(
 		Name: "CreditInput",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"store_id": &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+				Type: graphql.NewNonNull(scalar.UUID),
 			},
 			"customer_id": &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+				Type: graphql.NewNonNull(scalar.UUID),
 			},
 			"amount": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.Float),

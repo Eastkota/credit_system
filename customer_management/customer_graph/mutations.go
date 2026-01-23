@@ -1,9 +1,9 @@
 package graph
 
 import (
+	"credit_system/core/schema"
 	resolvers "credit_system/customer_management/customer_resolvers"
 	"credit_system/customer_management/model"
-	"credit_system/core/schema"
 
 	"github.com/graphql-go/graphql"
 )
@@ -18,7 +18,8 @@ func CustomerMutations(resolver *resolvers.CustomerResolver) graphql.Fields {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return resolver.RegisterCustomer(p), nil
+				middleware := schema.AuthMiddleware[model.GenericCustomerResponse](resolver.RegisterCustomer)
+				return middleware(p), nil
 			},
 		},
 
@@ -31,7 +32,7 @@ func CustomerMutations(resolver *resolvers.CustomerResolver) graphql.Fields {
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				middleware := schema.AuthMiddleware[model.GenericCustomerResponse](resolver.AddCredit)
-        		return middleware(p), nil
+				return middleware(p), nil
 			},
 		},
 	}

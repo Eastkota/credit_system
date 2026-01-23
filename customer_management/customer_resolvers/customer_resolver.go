@@ -113,12 +113,7 @@ func (r *CustomerResolver) FetchAllCustomerBalance(p graphql.ResolveParams) *mod
 		Error: nil,
 	}
 }
-<<<<<<< HEAD
-
-func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *model.GenericResponse {
-=======
 func (r *CustomerResolver) FetchAllCustomersByStoreId(p graphql.ResolveParams) *model.GenericCustomerResponse {
->>>>>>> 2337fa57514245274edbe5f56f09bf582408ddb9
 	storeId := p.Args["store_id"].(uuid.UUID)
 	result, err := r.Services.FetchAllCustomerByStoreId(p.Context, storeId)
 	if err != nil {
